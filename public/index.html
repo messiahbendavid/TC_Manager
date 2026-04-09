@@ -26,13 +26,11 @@
 html, body { height:100%; overflow:hidden; }
 body { background:var(--bg-darker); color:var(--text-light); font-family:var(--font-body); }
 
-/* ═══ HEADER / TITLE BAR ═══ */
 .top-bar {
   position:fixed; top:0; left:0; right:0; height:var(--header-h);
   background:linear-gradient(135deg,var(--bg-darker) 0%,#3d2b1f 50%,var(--bg-darker) 100%);
   border-bottom:4px solid var(--accent-copper);
-  display:flex; align-items:center; padding:0 2rem;
-  z-index:1000;
+  display:flex; align-items:center; padding:0 2rem; z-index:1000;
 }
 .top-bar::before {
   content:''; position:absolute; inset:0;
@@ -56,9 +54,7 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   display:flex; align-items:center; justify-content:center;
   gap:1.5rem; margin-top:0.5rem; flex-wrap:wrap;
 }
-.subtitle {
-  font-family:var(--font-body); font-size:0.8rem; color:var(--text-muted); letter-spacing:1px;
-}
+.subtitle { font-family:var(--font-body); font-size:0.8rem; color:var(--text-muted); letter-spacing:1px; }
 .viewing-badge {
   font-family:var(--font-heading); font-size:0.65rem; color:var(--accent-copper);
   letter-spacing:1.5px; text-transform:uppercase;
@@ -67,17 +63,13 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 }
 .viewing-badge.is-current { border-color:var(--accent-gold); color:var(--accent-gold); background:rgba(201,162,39,0.1); }
 
-/* ═══ SIDEBAR ═══ */
 .sidebar {
   position:fixed; top:var(--header-h); left:0; bottom:0;
   width:var(--sidebar-w); background:var(--bg-panel);
   border-right:2px solid var(--border-main);
-  display:flex; flex-direction:column;
-  z-index:900; transition:transform 0.3s ease;
+  display:flex; flex-direction:column; z-index:900; transition:transform 0.3s ease;
 }
-.sidebar-header {
-  padding:1.4rem 1.2rem 1rem; border-bottom:1px solid var(--border-main); flex-shrink:0;
-}
+.sidebar-header { padding:1.4rem 1.2rem 1rem; border-bottom:1px solid var(--border-main); flex-shrink:0; }
 .sidebar-header h2 {
   font-family:var(--font-heading); font-size:0.7rem; font-weight:600;
   color:var(--accent-gold); text-transform:uppercase; letter-spacing:2px;
@@ -86,20 +78,17 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 .version-count {
   display:inline-block; font-family:var(--font-heading); font-size:0.5rem;
   background:var(--accent-copper); color:var(--bg-dark);
-  padding:2px 7px; border-radius:10px; margin-left:0.5rem;
-  font-weight:700; vertical-align:middle;
+  padding:2px 7px; border-radius:10px; margin-left:0.5rem; font-weight:700; vertical-align:middle;
 }
 .version-list { flex:1; overflow-y:auto; padding:0.8rem; }
 .version-list::-webkit-scrollbar { width:6px; }
 .version-list::-webkit-scrollbar-track { background:var(--bg-dark); border-radius:3px; }
 .version-list::-webkit-scrollbar-thumb { background:var(--accent-copper); border-radius:3px; }
 
-/* ═══ VERSION CARDS ═══ */
 .version-card {
   background:var(--bg-card); border:1px solid var(--border-main);
   border-radius:6px; padding:0.9rem 1rem; margin-bottom:0.5rem;
-  cursor:pointer; transition:all 0.2s ease; position:relative;
-  border-left:3px solid transparent;
+  cursor:pointer; transition:all 0.2s ease; position:relative; border-left:3px solid transparent;
 }
 .version-card:hover {
   background:var(--bg-card-hover); border-color:var(--accent-copper);
@@ -110,10 +99,7 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   box-shadow:0 0 16px rgba(201,162,39,0.1);
 }
 .version-card.active .v-name { color:var(--accent-gold); }
-.v-name {
-  font-family:var(--font-heading); font-size:0.8rem; font-weight:700;
-  color:var(--text-light); letter-spacing:1px;
-}
+.v-name { font-family:var(--font-heading); font-size:0.8rem; font-weight:700; color:var(--text-light); letter-spacing:1px; }
 .v-date { font-size:0.68rem; color:var(--text-muted); margin-top:0.3rem; }
 .v-desc { font-size:0.68rem; color:var(--accent-copper); margin-top:0.35rem; line-height:1.4; font-style:italic; }
 .badge {
@@ -123,59 +109,12 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 }
 .badge-current { background:var(--accent-gold); color:var(--bg-dark); }
 
-/* ═══ MAIN CONTENT ═══ */
 .content {
-  position:fixed;
-  top:var(--header-h);
-  left:var(--sidebar-w);
-  right:0;
-  bottom:0;
-  background:#f5e6c8;
+  position:fixed; top:var(--header-h); left:var(--sidebar-w);
+  right:0; bottom:0; background:#f5e6c8;
 }
+#scheduleFrame { display:block; border:none; width:100%; height:100%; }
 
-#scheduleFrame {
-  display:block;
-  border:none;
-  width:100%;
-  height:100%;
-}
-
-/* ═══ ZOOM TOOLBAR ═══ */
-.zoom-toolbar {
-  position:absolute; bottom:24px; right:24px; z-index:100;
-  display:flex; align-items:center; gap:3px;
-  background:linear-gradient(135deg,rgba(26,18,11,0.95),rgba(61,43,31,0.95));
-  border:2px solid var(--accent-copper); border-radius:10px;
-  padding:6px 8px; box-shadow:0 6px 28px rgba(0,0,0,0.6);
-  backdrop-filter:blur(12px); user-select:none;
-}
-.zoom-btn {
-  font-family:var(--font-heading); font-size:1.1rem; font-weight:700;
-  width:40px; height:40px;
-  border:1px solid rgba(184,115,51,0.3); border-radius:6px;
-  background:rgba(255,255,255,0.06); color:var(--accent-gold);
-  cursor:pointer; display:flex; align-items:center; justify-content:center;
-  transition:all 0.15s;
-}
-.zoom-btn:hover {
-  background:var(--accent-copper); color:#fff;
-  border-color:var(--accent-copper); transform:scale(1.05);
-}
-.zoom-btn:active { transform:scale(0.95); }
-.zoom-btn-text {
-  font-size:0.55rem; width:auto; padding:0 14px; letter-spacing:1px; text-transform:uppercase;
-}
-.zoom-level {
-  font-family:var(--font-heading); font-size:0.72rem; font-weight:600;
-  color:var(--text-light); min-width:54px; text-align:center; letter-spacing:1px;
-}
-.zoom-divider { width:1px; height:28px; background:rgba(184,115,51,0.3); margin:0 5px; }
-.zoom-hint {
-  font-family:var(--font-body); font-size:0.55rem; color:var(--text-muted);
-  margin-left:6px; letter-spacing:0.5px;
-}
-
-/* ═══ LOADING ═══ */
 .loading-overlay {
   position:absolute; inset:0; background:var(--bg-dark);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -183,9 +122,8 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 }
 .loading-overlay.hidden { opacity:0; pointer-events:none; }
 .spinner {
-  width:44px; height:44px;
-  border:3px solid var(--border-main); border-top-color:var(--accent-gold);
-  border-radius:50%; animation:spin 0.8s linear infinite;
+  width:44px; height:44px; border:3px solid var(--border-main);
+  border-top-color:var(--accent-gold); border-radius:50%; animation:spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform:rotate(360deg); } }
 .loading-text {
@@ -193,38 +131,22 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   margin-top:1.2rem; letter-spacing:2px; text-transform:uppercase;
 }
 
-/* ═══ ERROR STATE ═══ */
 .error-state {
-  position:absolute; inset:0;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  background:var(--bg-dark); text-align:center; padding:2rem;
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; background:var(--bg-dark); text-align:center; padding:2rem;
 }
 .error-icon { font-size:3rem; margin-bottom:1rem; opacity:0.7; }
-.error-title {
-  font-family:var(--font-heading); font-size:0.9rem;
-  color:var(--accent-gold); letter-spacing:2px; margin-bottom:0.6rem;
-}
-.error-hint {
-  font-size:0.72rem; color:var(--text-muted); letter-spacing:0.5px;
-  max-width:420px; line-height:1.6;
-}
-.error-hint code {
-  background:rgba(184,115,51,0.15); color:var(--accent-copper);
-  padding:1px 6px; border-radius:3px;
-}
+.error-title { font-family:var(--font-heading); font-size:0.9rem; color:var(--accent-gold); letter-spacing:2px; margin-bottom:0.6rem; }
+.error-hint { font-size:0.72rem; color:var(--text-muted); max-width:420px; line-height:1.6; }
+.error-hint code { background:rgba(184,115,51,0.15); color:var(--accent-copper); padding:1px 6px; border-radius:3px; }
 
-/* ═══ BACKDROP ═══ */
-.sidebar-backdrop {
-  display:none; position:fixed; inset:0; z-index:899;
-  background:rgba(0,0,0,0.5); backdrop-filter:blur(2px);
-}
+.sidebar-backdrop { display:none; position:fixed; inset:0; z-index:899; background:rgba(0,0,0,0.5); }
 .sidebar-footer {
   padding:0.8rem 1.2rem; border-top:1px solid var(--border-main);
   font-size:0.55rem; color:var(--text-muted); text-align:center;
   font-family:var(--font-heading); letter-spacing:1px; flex-shrink:0;
 }
 
-/* ═══ RESPONSIVE ═══ */
 @media (max-width:960px) {
   :root { --header-h:80px; }
   .menu-toggle { display:block; }
@@ -234,15 +156,10 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   .content { left:0; }
   .main-title { font-size:1.3rem; letter-spacing:2px; }
   .subtitle { display:none; }
-  .zoom-toolbar { bottom:14px; right:14px; padding:4px 5px; }
-  .zoom-btn { width:34px; height:34px; font-size:0.95rem; }
-  .zoom-btn-text { padding:0 10px; font-size:0.5rem; }
-  .zoom-hint { display:none; }
 }
 @media (max-width:500px) {
   :root { --sidebar-w:280px; --header-h:70px; }
   .main-title { font-size:1rem; letter-spacing:1px; }
-  .viewing-badge { font-size:0.5rem; padding:4px 8px; }
 }
 </style>
 </head>
@@ -262,7 +179,7 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-header">
     <h2>Schedule Versions <span class="version-count" id="versionCount">0</span></h2>
-    <p class="sidebar-hint">Each version is a weekly snapshot of the master schedule and Gantt chart.</p>
+    <p class="sidebar-hint">Select a weekly snapshot to view.</p>
   </div>
   <div class="version-list" id="versionList"></div>
   <div class="sidebar-footer">© 2026 Ramble × TCM — Confidential</div>
@@ -274,193 +191,72 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
     <div class="spinner"></div>
     <div class="loading-text">Loading schedule…</div>
   </div>
-
   <iframe id="scheduleFrame" title="Schedule View"></iframe>
-
-  <div class="zoom-toolbar" id="zoomToolbar">
-    <button class="zoom-btn" id="zoomOut" title="Zoom Out">−</button>
-    <div class="zoom-level" id="zoomLevel">100%</div>
-    <button class="zoom-btn" id="zoomIn" title="Zoom In">+</button>
-    <div class="zoom-divider"></div>
-    <button class="zoom-btn zoom-btn-text" id="zoomFit" title="Fit schedule to screen">FIT</button>
-    <button class="zoom-btn zoom-btn-text" id="zoomReset" title="Actual size">1 : 1</button>
-  </div>
 </main>
 
 <script>
 (function () {
-  var sidebar      = document.getElementById('sidebar');
-  var backdrop     = document.getElementById('backdrop');
-  var menuToggle   = document.getElementById('menuToggle');
-  var versionList  = document.getElementById('versionList');
+  var sidebar = document.getElementById('sidebar');
+  var backdrop = document.getElementById('backdrop');
+  var menuToggle = document.getElementById('menuToggle');
+  var versionList = document.getElementById('versionList');
   var versionCount = document.getElementById('versionCount');
-  var frame        = document.getElementById('scheduleFrame');
-  var loading      = document.getElementById('loadingOverlay');
-  var headerBadge  = document.getElementById('headerBadge');
-  var zoomLabel    = document.getElementById('zoomLevel');
-  var btnIn        = document.getElementById('zoomIn');
-  var btnOut       = document.getElementById('zoomOut');
-  var btnFit       = document.getElementById('zoomFit');
-  var btnReset     = document.getElementById('zoomReset');
-  var zoomToolbar  = document.getElementById('zoomToolbar');
-
+  var frame = document.getElementById('scheduleFrame');
+  var loading = document.getElementById('loadingOverlay');
+  var headerBadge = document.getElementById('headerBadge');
   var versions = [];
   var activeId = null;
 
-  // ─── ZOOM ENGINE ───
-  // Sets CSS zoom directly on the iframe's internal document.
-  // No transforms, no overflow conflicts.
-  var MIN_ZOOM = 0.15;
-  var MAX_ZOOM = 2.0;
-  var STEP     = 0.05;
-  var currentZoom = 1;
-
-  function applyZoom(z) {
-    currentZoom = Math.round(Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, z)) * 100) / 100;
-    try {
-      var doc = frame.contentDocument || frame.contentWindow.document;
-      doc.documentElement.style.zoom = String(currentZoom);
-    } catch(e) {}
-    zoomLabel.textContent = Math.round(currentZoom * 100) + '%';
-  }
-
-  function fitToAll() {
-    try {
-      var doc = frame.contentDocument || frame.contentWindow.document;
-      var table = doc.getElementById('schedule-table');
-      var body = doc.body;
-      if (table && body) {
-        // Temporarily reset zoom to measure true content size
-        doc.documentElement.style.zoom = '1';
-        var contentW = Math.max(table.scrollWidth, body.scrollWidth);
-        var contentH = body.scrollHeight;
-        var availW = frame.clientWidth;
-        var availH = frame.clientHeight;
-        var scaleW = availW / contentW;
-        var scaleH = availH / contentH;
-        applyZoom(Math.min(scaleW, scaleH) * 0.95);
-        return;
-      }
-    } catch(e) {}
-  }
-
-  // ─── ZOOM CONTROLS ───
-  btnIn.addEventListener('click',    function() { applyZoom(currentZoom + STEP); });
-  btnOut.addEventListener('click',   function() { applyZoom(currentZoom - STEP); });
-  btnFit.addEventListener('click',   fitToAll);
-  btnReset.addEventListener('click', function() { applyZoom(1); });
-
-  zoomToolbar.addEventListener('wheel', function(e) {
-    e.preventDefault();
-    applyZoom(currentZoom + (e.deltaY < 0 ? STEP : -STEP));
-  }, { passive: false });
-
-  document.addEventListener('keydown', function(e) {
-    if (!(e.ctrlKey || e.metaKey)) return;
-    if (e.key === '=' || e.key === '+') { e.preventDefault(); applyZoom(currentZoom + STEP); }
-    if (e.key === '-')                  { e.preventDefault(); applyZoom(currentZoom - STEP); }
-    if (e.key === '0')                  { e.preventDefault(); fitToAll(); }
-  });
-
-  // ─── SIDEBAR ───
   menuToggle.addEventListener('click', function() { sidebar.classList.toggle('open'); });
-  backdrop.addEventListener('click',   function() { sidebar.classList.remove('open'); });
+  backdrop.addEventListener('click', function() { sidebar.classList.remove('open'); });
 
-  // ─── IFRAME LOADED ───
   frame.addEventListener('load', function() {
-    setTimeout(function() {
-      loading.classList.add('hidden');
-      sidebar.classList.remove('open');
-      applyZoom(0.35);   // ← STARTING ZOOM — adjust this number
-    }, 400);
+    setTimeout(function() { loading.classList.add('hidden'); sidebar.classList.remove('open'); }, 300);
   });
 
-  var resizeTimer;
-  window.addEventListener('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() { applyZoom(currentZoom); }, 200);
-  });
-
-  // ─── VERSION MANAGEMENT ───
-  function getUrlVersion() {
-    return new URLSearchParams(window.location.search).get('v');
-  }
+  function getUrlVersion() { return new URLSearchParams(window.location.search).get('v'); }
   function setUrlVersion(id) {
-    var url = new URL(window.location);
-    url.searchParams.set('v', id);
+    var url = new URL(window.location); url.searchParams.set('v', id);
     window.history.pushState({ v: id }, '', url);
   }
-
   function loadVersion(id) {
     var ver = versions.find(function(v) { return v.id === id; });
     if (!ver) return;
-    activeId = id;
-    setUrlVersion(id);
+    activeId = id; setUrlVersion(id);
     loading.classList.remove('hidden');
     frame.src = ver.file;
     headerBadge.textContent = ver.version;
     headerBadge.classList.toggle('is-current', !!ver.current);
-    document.querySelectorAll('.version-card').forEach(function(card) {
-      card.classList.toggle('active', card.dataset.id === id);
-    });
+    document.querySelectorAll('.version-card').forEach(function(c) { c.classList.toggle('active', c.dataset.id === id); });
   }
-
   function renderVersions() {
-    versionList.innerHTML = '';
-    versionCount.textContent = versions.length;
+    versionList.innerHTML = ''; versionCount.textContent = versions.length;
     versions.forEach(function(v) {
-      var card = document.createElement('div');
-      card.className = 'version-card';
-      card.dataset.id = v.id;
-      var badges = '';
-      if (v.current) badges += '<span class="badge badge-current">Latest</span>';
-      card.innerHTML =
-        '<div class="v-name">' + esc(v.version) + badges + '</div>' +
-        '<div class="v-date">Published: ' + esc(v.date) + '</div>' +
-        (v.description ? '<div class="v-desc">' + esc(v.description) + '</div>' : '');
+      var card = document.createElement('div'); card.className = 'version-card'; card.dataset.id = v.id;
+      var badges = v.current ? '<span class="badge badge-current">Latest</span>' : '';
+      card.innerHTML = '<div class="v-name">' + esc(v.version) + badges + '</div><div class="v-date">Published: ' + esc(v.date) + '</div>' + (v.description ? '<div class="v-desc">' + esc(v.description) + '</div>' : '');
       card.addEventListener('click', function() { loadVersion(v.id); });
       versionList.appendChild(card);
     });
   }
-
-  function esc(s) {
-    var d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
-
-  function showError(msg) {
-    loading.innerHTML =
-      '<div class="error-state">' +
-        '<div class="error-icon">⚠</div>' +
-        '<div class="error-title">Cannot Load Versions</div>' +
-        '<div class="error-hint">' + msg + '</div>' +
-      '</div>';
-  }
+  function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
   fetch('versions.json?_=' + Date.now())
-    .then(function(r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
+    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(function(data) {
       versions = data.sort(function(a, b) { return b.date.localeCompare(a.date); });
       renderVersions();
       var urlVer = getUrlVersion();
-      var match  = urlVer && versions.find(function(v) { return v.id === urlVer; });
+      var match = urlVer && versions.find(function(v) { return v.id === urlVer; });
       var target = match ? match.id : (versions.find(function(v) { return v.current; }) || versions[0]).id;
       loadVersion(target);
     })
     .catch(function(err) {
       console.error(err);
-      showError('Could not load <code>versions.json</code>.<br><br>Error: ' + esc(String(err)));
-      headerBadge.textContent = 'Error';
+      loading.innerHTML = '<div class="error-state"><div class="error-icon">⚠</div><div class="error-title">Cannot Load Versions</div><div class="error-hint">Could not load <code>versions.json</code></div></div>';
     });
 
-  window.addEventListener('popstate', function() {
-    var v = getUrlVersion();
-    if (v && v !== activeId) loadVersion(v);
-  });
+  window.addEventListener('popstate', function() { var v = getUrlVersion(); if (v && v !== activeId) loadVersion(v); });
 })();
 </script>
 </body>
