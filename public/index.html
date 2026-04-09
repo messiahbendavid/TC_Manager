@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,46 +20,55 @@
   --font-heading: 'Orbitron', sans-serif;
   --font-body: 'Share Tech Mono', 'Courier New', monospace;
   --sidebar-w: 300px;
-  --header-h: 64px;
+  --header-h: 110px;
 }
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html, body { height:100%; overflow:hidden; }
 body { background:var(--bg-darker); color:var(--text-light); font-family:var(--font-body); }
 
-/* ═══ HEADER ═══ */
+/* ═══ HEADER / TITLE BAR ═══ */
 .top-bar {
   position:fixed; top:0; left:0; right:0; height:var(--header-h);
-  background:linear-gradient(135deg,var(--bg-dark) 0%,#3d2b1f 50%,var(--bg-dark) 100%);
-  border-bottom:3px solid var(--accent-copper);
-  display:flex; align-items:center; padding:0 1.5rem; z-index:1000;
+  background:linear-gradient(135deg,var(--bg-darker) 0%,#3d2b1f 50%,var(--bg-darker) 100%);
+  border-bottom:4px solid var(--accent-copper);
+  display:flex; align-items:center; padding:0 2rem;
+  z-index:1000;
 }
-.top-bar::after {
+.top-bar::before {
   content:''; position:absolute; inset:0;
-  background:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(184,115,51,0.03) 80px,rgba(184,115,51,0.03) 81px);
+  background:repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(184,115,51,0.04) 60px,rgba(184,115,51,0.04) 61px);
   pointer-events:none;
 }
 .menu-toggle {
   display:none; background:none; border:1px solid var(--accent-copper);
   color:var(--accent-gold); font-size:1.4rem; padding:6px 12px;
-  border-radius:4px; cursor:pointer; margin-right:1rem;
+  border-radius:4px; cursor:pointer; margin-right:1.5rem;
   font-family:var(--font-body); transition:all 0.2s; position:relative; z-index:1;
 }
 .menu-toggle:hover { background:var(--accent-copper); color:#fff; }
-.top-title { flex:1; position:relative; z-index:1; }
-.top-main {
-  font-family:var(--font-heading); font-size:1.4rem; font-weight:900;
-  color:var(--accent-gold); letter-spacing:3px; text-transform:uppercase;
-  text-shadow:0 2px 8px rgba(0,0,0,0.5);
+
+.title-content { flex:1; text-align:center; position:relative; z-index:1; }
+.main-title {
+  font-family:var(--font-heading); font-size:2.2rem; font-weight:900;
+  color:var(--accent-gold); text-transform:uppercase; letter-spacing:4px;
+  text-shadow:0 2px 8px rgba(0,0,0,0.5); line-height:1.2;
 }
-.top-sub { display:block; font-size:0.7rem; color:var(--text-muted); letter-spacing:1.5px; margin-top:2px; }
-.header-version {
-  position:relative; z-index:1;
+.title-meta {
+  display:flex; align-items:center; justify-content:center;
+  gap:1.5rem; margin-top:0.5rem; flex-wrap:wrap;
+}
+.subtitle {
+  font-family:var(--font-body); font-size:0.8rem; color:var(--text-muted);
+  letter-spacing:1px;
+}
+.viewing-badge {
   font-family:var(--font-heading); font-size:0.65rem; color:var(--accent-copper);
   letter-spacing:1.5px; text-transform:uppercase;
-  padding:8px 16px; border:1px solid rgba(184,115,51,0.4);
+  padding:5px 14px; border:1px solid rgba(184,115,51,0.4);
   border-radius:4px; background:rgba(184,115,51,0.08);
-  white-space:nowrap;
+  white-space:nowrap; transition:all 0.3s;
 }
+.viewing-badge.is-current { border-color:var(--accent-gold); color:var(--accent-gold); background:rgba(201,162,39,0.1); }
 
 /* ═══ SIDEBAR ═══ */
 .sidebar {
@@ -129,7 +137,7 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 }
 .content iframe { width:100%; height:100%; border:none; display:block; }
 
-/* ═══ LOADING OVERLAY ═══ */
+/* ═══ LOADING ═══ */
 .loading-overlay {
   position:absolute; inset:0; background:var(--bg-dark);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -147,7 +155,7 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   margin-top:1.2rem; letter-spacing:2px; text-transform:uppercase;
 }
 
-/* ═══ ERROR / EMPTY STATE ═══ */
+/* ═══ ERROR STATE ═══ */
 .error-state {
   position:absolute; inset:0;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -173,43 +181,46 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   background:rgba(0,0,0,0.5); backdrop-filter:blur(2px);
 }
 
-/* ═══ RESPONSIVE ═══ */
-@media (max-width:960px) {
-  .menu-toggle { display:block; }
-  .sidebar { transform:translateX(-100%); }
-  .sidebar.open { transform:translateX(0); box-shadow:6px 0 30px rgba(0,0,0,0.5); }
-  .sidebar.open ~ .sidebar-backdrop { display:block; }
-  .content { left:0; }
-  .top-main { font-size:1rem; letter-spacing:2px; }
-  .header-version { font-size:0.55rem; padding:6px 10px; }
-}
-@media (max-width:500px) {
-  :root { --sidebar-w: 280px; }
-  .top-main { font-size:0.85rem; }
-  .top-sub { display:none; }
-}
-
 /* ═══ SIDEBAR FOOTER ═══ */
 .sidebar-footer {
   padding:0.8rem 1.2rem; border-top:1px solid var(--border-main);
   font-size:0.55rem; color:var(--text-muted); text-align:center;
   font-family:var(--font-heading); letter-spacing:1px; flex-shrink:0;
 }
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width:960px) {
+  :root { --header-h: 80px; }
+  .menu-toggle { display:block; }
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); box-shadow:6px 0 30px rgba(0,0,0,0.5); }
+  .sidebar.open ~ .sidebar-backdrop { display:block; }
+  .content { left:0; }
+  .main-title { font-size:1.3rem; letter-spacing:2px; }
+  .subtitle { display:none; }
+}
+@media (max-width:500px) {
+  :root { --sidebar-w: 280px; --header-h: 70px; }
+  .main-title { font-size:1rem; letter-spacing:1px; }
+  .viewing-badge { font-size:0.5rem; padding:4px 8px; }
+}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- ═══ HEADER ═══ -->
 <header class="top-bar">
   <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
-  <div class="top-title">
-    <span class="top-main">Ramble–TCM 2026</span>
-    <span class="top-sub">Program Schedule Archive</span>
+  <div class="title-content">
+    <div class="main-title">Ramble–TCM 2026 Program Schedule</div>
+    <div class="title-meta">
+      <span class="subtitle">Master Construction &amp; Procurement Timeline</span>
+      <span class="viewing-badge" id="headerBadge">Loading…</span>
+    </div>
   </div>
-  <div class="header-version" id="headerBadge">Loading…</div>
 </header>
 
-<!-- SIDEBAR -->
+<!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-header">
     <h2>Schedule Versions <span class="version-count" id="versionCount">0</span></h2>
@@ -220,7 +231,7 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 </aside>
 <div class="sidebar-backdrop" id="backdrop"></div>
 
-<!-- MAIN CONTENT -->
+<!-- ═══ CONTENT ═══ -->
 <main class="content" id="content">
   <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner"></div>
@@ -231,7 +242,6 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 
 <script>
 (function () {
-  // ─── DOM refs ───
   const sidebar     = document.getElementById('sidebar');
   const backdrop    = document.getElementById('backdrop');
   const menuToggle  = document.getElementById('menuToggle');
@@ -244,22 +254,14 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   let versions = [];
   let activeId = null;
 
-  // ─── Mobile sidebar toggle ───
-  menuToggle.addEventListener('click', () => {
-    sidebar.classList.toggle('open');
-  });
-  backdrop.addEventListener('click', () => {
-    sidebar.classList.remove('open');
-  });
+  menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+  backdrop.addEventListener('click', () => sidebar.classList.remove('open'));
 
-  // ─── iframe loaded ───
   frame.addEventListener('load', () => {
-    // Small delay so the schedule renders before we fade out the overlay
     setTimeout(() => loading.classList.add('hidden'), 200);
     sidebar.classList.remove('open');
   });
 
-  // ─── URL param helpers ───
   function getUrlVersion() {
     return new URLSearchParams(window.location.search).get('v');
   }
@@ -269,7 +271,6 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
     window.history.pushState({ v: id }, '', url);
   }
 
-  // ─── Load a version ───
   function loadVersion(id) {
     const ver = versions.find(v => v.id === id);
     if (!ver) return;
@@ -277,14 +278,15 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
     setUrlVersion(id);
     loading.classList.remove('hidden');
     frame.src = ver.file;
-    headerBadge.textContent = 'Viewing: ' + ver.version + (ver.current ? ' (Current)' : '');
-    // Update active card
+
+    headerBadge.textContent = ver.version;
+    headerBadge.classList.toggle('is-current', !!ver.current);
+
     document.querySelectorAll('.version-card').forEach(card => {
       card.classList.toggle('active', card.dataset.id === id);
     });
   }
 
-  // ─── Render version cards ───
   function renderVersions() {
     versionList.innerHTML = '';
     versionCount.textContent = versions.length;
@@ -292,11 +294,9 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
       const card = document.createElement('div');
       card.className = 'version-card';
       card.dataset.id = v.id;
-
       let badges = '';
       if (v.current) badges += '<span class="badge badge-current">Latest</span>';
       if (v.draft)   badges += '<span class="badge badge-draft">Draft</span>';
-
       card.innerHTML = `
         <div class="v-name">${esc(v.version)}${badges}</div>
         <div class="v-date">Published: ${esc(v.date)}</div>
@@ -313,7 +313,6 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
     return d.innerHTML;
   }
 
-  // ─── Show error ───
   function showError(msg) {
     loading.innerHTML = `
       <div class="error-state">
@@ -323,18 +322,14 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
       </div>`;
   }
 
-  // ─── Boot ───
   fetch('versions.json?_=' + Date.now())
     .then(r => {
       if (!r.ok) throw new Error(r.status);
       return r.json();
     })
     .then(data => {
-      // Sort newest-first by date
       versions = data.sort((a, b) => b.date.localeCompare(a.date));
       renderVersions();
-
-      // Which version to show?
       const urlVer = getUrlVersion();
       const match  = urlVer && versions.find(v => v.id === urlVer);
       const target = match ? match.id : (versions.find(v => v.current) || versions[0]).id;
@@ -342,15 +337,11 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
     })
     .catch(err => {
       console.error(err);
-      showError(
-        'Could not load <code>versions.json</code>. Make sure the file exists next to <code>index.html</code>.' +
-        '<br><br>Error: ' + esc(String(err))
-      );
+      showError('Could not load <code>versions.json</code>.<br><br>Error: ' + esc(String(err)));
       headerBadge.textContent = 'Error';
     });
 
-  // ─── Handle browser back/forward ───
-  window.addEventListener('popstate', (e) => {
+  window.addEventListener('popstate', () => {
     const v = getUrlVersion();
     if (v && v !== activeId) loadVersion(v);
   });
