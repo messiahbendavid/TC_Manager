@@ -1,1 +1,640 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ramble-TCM 2026 Program Schedule v4.8.2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-parchment: #f5e6c8;
+  --bg-dark: #2c1f14;
+  --bg-darker: #1a120b;
+  --text-primary: #2c1810;
+  --text-light: #f5e6c8;
+  --border-main: #8b7355;
+  --border-light: #c4a882;
+  --accent-copper: #b87333;
+  --accent-rust: #a0522d;
+  --accent-gold: #c9a227;
+  --font-heading: 'Orbitron', sans-serif;
+  --font-body: 'Share Tech Mono', 'Courier New', monospace;
+  --row-height: 48px;
+  --gantt-width: 1200px;
+  --px-per-day: 6;
+  --start-marker-px: 36px;
+  --deadline-marker-px: 540px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:
+    radial-gradient(ellipse at 20% 50%,rgba(184,115,51,0.06) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 50%,rgba(160,82,45,0.06) 0%,transparent 50%),
+    linear-gradient(180deg,#f5e6c8 0%,#e8d5b0 50%,#f0dfc0 100%);
+  color:var(--text-primary);font-family:var(--font-body);
+  min-height:100vh;overflow-x:hidden;
+}
+
+/* ─── TITLE ─── */
+.title-bar{
+  background:linear-gradient(135deg,var(--bg-darker) 0%,#3d2b1f 50%,var(--bg-darker) 100%);
+  padding:2rem 2rem 1.4rem;text-align:center;
+  border-bottom:4px solid var(--accent-copper);position:relative;overflow:hidden;
+}
+.title-bar::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(184,115,51,0.04) 60px,rgba(184,115,51,0.04) 61px);
+  pointer-events:none;
+}
+.main-title{font-family:var(--font-heading);font-size:2.6rem;font-weight:900;color:var(--accent-gold);text-transform:uppercase;letter-spacing:4px;text-shadow:0 2px 8px rgba(0,0,0,0.5);position:relative;}
+.version{font-family:var(--font-heading);font-size:0.95rem;color:var(--accent-copper);display:block;margin-top:0.4rem;letter-spacing:2px;font-weight:400;}
+.subtitle{font-family:var(--font-body);font-size:0.85rem;color:#9a8060;margin-top:0.5rem;letter-spacing:1px;}
+
+/* ─── LEGEND ─── */
+.legend-bar{display:flex;flex-wrap:wrap;gap:0.6rem 1.4rem;justify-content:center;padding:1rem 2rem;background:rgba(44,31,20,0.04);border-bottom:2px solid var(--border-light);}
+.legend-item{display:flex;align-items:center;gap:0.4rem;font-size:0.78rem;font-family:var(--font-heading);letter-spacing:0.5px;color:#5a3e2b;}
+.legend-swatch{width:16px;height:16px;border-radius:3px;border:1px solid rgba(0,0,0,0.25);box-shadow:inset 0 1px 2px rgba(255,255,255,0.3);}
+.markers-legend{display:flex;gap:2.5rem;justify-content:center;padding:0.7rem;font-size:0.85rem;font-family:var(--font-body);color:#5a3e2b;}
+.marker-legend-item{display:flex;align-items:center;gap:0.4rem;}
+.marker-line-sample{width:24px;height:0;border-top:2.5px dashed;}
+
+/* ─── SECTION NAV ─── */
+.section-nav{
+  position:sticky;top:0;z-index:100;
+  background:linear-gradient(135deg,#3d2b1f,#2c1f14);
+  border-bottom:3px solid var(--accent-copper);
+  padding:0.5rem 1rem;display:flex;align-items:center;gap:0.5rem;
+  overflow-x:auto;flex-wrap:nowrap;
+}
+.section-nav::-webkit-scrollbar{height:4px;}
+.section-nav::-webkit-scrollbar-thumb{background:var(--accent-copper);border-radius:2px;}
+.section-nav-label{font-family:var(--font-heading);font-size:0.65rem;color:var(--accent-gold);text-transform:uppercase;letter-spacing:1.5px;margin-right:0.5rem;white-space:nowrap;}
+.section-nav-btn{font-family:var(--font-heading);font-size:0.55rem;padding:5px 10px;border-radius:4px;cursor:pointer;border:1px solid rgba(184,115,51,0.4);background:rgba(255,255,255,0.06);color:#c8b890;transition:all 0.2s;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;}
+.section-nav-btn:hover{background:var(--accent-copper);color:#fff;border-color:var(--accent-copper);transform:translateY(-1px);box-shadow:0 2px 8px rgba(184,115,51,0.3);}
+.section-nav-btn.active{background:var(--accent-gold);color:var(--bg-dark);border-color:var(--accent-gold);font-weight:700;}
+
+/* ─── SCROLL PROGRESS ─── */
+.scroll-progress-wrap{height:6px;background:rgba(44,31,20,0.15);overflow:hidden;position:sticky;top:44px;z-index:99;}
+.scroll-progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent-copper),var(--accent-gold));transition:width 0.08s;border-radius:0 3px 3px 0;}
+
+/* ─── SCROLL ARROWS ─── */
+.scroll-arrow{position:fixed;top:50%;z-index:200;width:48px;height:80px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(44,31,20,0.92),rgba(61,43,31,0.92));border:2px solid var(--accent-copper);cursor:pointer;transition:all 0.2s;font-size:1.6rem;color:var(--accent-gold);font-family:var(--font-heading);user-select:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);}
+.scroll-arrow:hover{background:linear-gradient(135deg,rgba(184,115,51,0.95),rgba(160,82,45,0.95));color:#fff;box-shadow:0 6px 24px rgba(184,115,51,0.4);}
+.scroll-arrow-left{left:6px;transform:translateY(-50%);border-radius:6px 12px 12px 6px;}
+.scroll-arrow-right{right:6px;transform:translateY(-50%);border-radius:12px 6px 6px 12px;}
+.scroll-arrow.hidden{opacity:0;pointer-events:none;}
+
+/* ─── SCHEDULE WRAPPER — scrolls BOTH axes ─── */
+.schedule-wrapper{
+  overflow:auto;position:relative;
+  margin:0 0.5rem;
+  border:2px solid var(--border-main);border-radius:6px;
+  box-shadow:0 4px 20px rgba(44,31,20,0.15);
+  cursor:grab;
+}
+.schedule-wrapper.dragging{cursor:grabbing;user-select:none;}
+.schedule-wrapper::-webkit-scrollbar{width:14px;height:18px;}
+.schedule-wrapper::-webkit-scrollbar-track{background:linear-gradient(0deg,#d4c4a8,#e8d5b0);border-radius:6px;border:2px solid #c4a882;}
+.schedule-wrapper::-webkit-scrollbar-thumb{background:linear-gradient(0deg,var(--accent-rust),var(--accent-copper));border-radius:6px;border:2px solid #c4a882;box-shadow:inset 0 1px 3px rgba(255,255,255,0.3);}
+.schedule-wrapper::-webkit-scrollbar-thumb:hover{background:linear-gradient(0deg,var(--accent-copper),var(--accent-gold));}
+.schedule-wrapper::-webkit-scrollbar-corner{background:#d4c4a8;}
+.schedule-wrapper{scrollbar-width:auto;scrollbar-color:var(--accent-copper) #e8d5b0;}
+
+/* ─── TABLE ─── */
+table{border-collapse:separate;border-spacing:0;background:var(--bg-parchment);width:max-content;}
+
+/* ─── STICKY HEADER ROWS ─── */
+thead th{
+  font-family:var(--font-heading);background:var(--bg-dark);
+  color:var(--text-light);padding:10px 12px;font-size:1.2rem;
+  text-transform:uppercase;letter-spacing:1.2px;font-weight:600;
+  border:1px solid #4a3728;white-space:nowrap;
+  position:sticky;z-index:30;
+}
+thead tr:first-child th{top:0;}
+thead tr:nth-child(2) th{z-index:29;}
+/* ↑ row-2 top offset is set by JS after measuring row-1 height */
+
+/* corner cell that is sticky BOTH horizontally AND vertically */
+thead th.corner-th{
+  position:sticky;left:0;z-index:35;
+  background:var(--bg-darker);
+}
+
+thead th.gantt-th{
+  padding:0;vertical-align:bottom;
+  width:var(--gantt-width);min-width:var(--gantt-width);
+}
+.tcm-group{
+  background:linear-gradient(135deg,#3d2b1f,#4a3728) !important;
+  color:#72B7B2 !important;font-size:2.5rem !important;
+  letter-spacing:3px;padding:12px 16px !important;
+  text-shadow:0 1px 4px rgba(0,0,0,0.4);
+  border-bottom:2px solid #72B7B2 !important;
+  
+}
+.ramble-group{
+  background:linear-gradient(135deg,#3d2b1f,#4a3728) !important;
+  color:var(--accent-gold) !important;font-size:2.5rem !important;
+  letter-spacing:3px;padding:12px 16px !important;
+  text-shadow:0 1px 4px rgba(0,0,0,0.4);
+  border-bottom:2px solid var(--accent-gold) !important;
+}
+thead th.sub-header{background:#4a3728;font-size:0.7rem;letter-spacing:0.8px;color:var(--accent-copper);}
+
+/* ─── TIME AXIS ─── */
+.time-axis-wrap{position:relative;width:var(--gantt-width);height:90px;background:var(--bg-dark);overflow:visible;}
+.time-tick{position:absolute;bottom:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;}
+.tick-line{width:1px;height:14px;background:var(--border-light);}
+.tick-label{font-size:0.72rem;color:#c8b890;white-space:nowrap;transform:rotate(-50deg) translateX(-8px);transform-origin:bottom right;margin-bottom:52px;font-family:var(--font-heading);letter-spacing:0.5px;font-weight:500;transform:translateX(50%);}
+.time-marker{position:absolute;bottom:0;height:100%;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;transform:translateY(+50%);}
+.tmark-label{font-size:0.58rem;white-space:nowrap;padding:3px 6px;border-radius:3px;margin-top:3px;font-family:var(--font-heading);letter-spacing:0.5px;font-weight:700;}
+.tmark-line{width:2px;flex:1;}
+.start-label{background:rgba(34,139,34,0.3);color:#5b5;}
+.start-line{background:rgba(34,139,34,0.5);}
+.deadline-label{background:rgba(220,20,60,0.3);color:#e66;}
+.deadline-line{background:rgba(220,20,60,0.5);}
+
+/* ─── BODY CELLS ─── */
+tbody td{padding:4px 8px;border:1px solid rgba(196,168,130,0.4);font-size:0.88rem;vertical-align:middle;min-height:var(--row-height);white-space:normal;overflow:visible;}
+
+/* STICKY SECTION COLUMN — frozen left */
+td.section-cell{
+  font-family:var(--font-heading);font-size:0.78rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.8px;text-align:center;
+  padding:10px 8px;width:170px;min-width:170px;max-width:170px;
+  white-space:normal;word-wrap:break-word;line-height:1.45;
+  border-left-width:5px;border-left-style:solid;vertical-align:middle;
+  position:sticky;left:0;z-index:14;
+  /* opaque background so content scrolls behind cleanly */
+  background:#f3e2c0;
+}
+
+/* GANTT CELL */
+td.gantt-cell{
+  position:relative;width:var(--gantt-width);min-width:var(--gantt-width);
+  padding:0 !important;overflow:hidden;
+  background-image:repeating-linear-gradient(90deg,transparent,transparent 83px,rgba(139,115,85,0.1) 83px,rgba(139,115,85,0.1) 84px);
+  background-position:0 0;background-color:var(--bg-parchment);
+}
+td.gantt-cell::before{content:'';position:absolute;top:0;bottom:0;left:var(--start-marker-px);width:0;border-left:2px dashed rgba(34,139,34,0.3);pointer-events:none;z-index:2;}
+td.gantt-cell::after{content:'';position:absolute;top:0;bottom:0;left:var(--deadline-marker-px);width:0;border-left:2px dashed rgba(220,20,60,0.3);pointer-events:none;z-index:2;}
+.gantt-bar{position:absolute;top:4px;bottom:4px;height:auto;border-radius:4px;border:1px solid rgba(0,0,0,0.25);display:flex;align-items:center;padding-left:5px;font-size:0.75rem;font-weight:bold;color:#fff;text-shadow:1px 1px 2px rgba(0,0,0,0.6);z-index:3;box-shadow:0 1px 3px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.2);transition:filter 0.15s;cursor:default;min-width:5px;}
+.gantt-bar:hover{filter:brightness(1.15);box-shadow:0 2px 8px rgba(0,0,0,0.3);}
+.bar-num{white-space:nowrap;position:relative;z-index:4;font-family:var(--font-heading);font-size:0.68rem;}
+
+td.task-cell{max-width:500px;min-width:350px;font-size:1.5rem;padding-left:12px !important;font-weight:500;white-space:normal;word-wrap:break-word;line-height:1.3;}
+td.date-cell{font-size:1.05rem;color:#5a4030;min-width:175px;font-weight:500;letter-spacing:0.3px;}
+td.assign-cell{font-size:1.35rem;color:#4a3728;min-width:120px;max-width:120px;white-space:normal;word-wrap:break-word;line-height:1.35;}
+td.notes-cell{font-size:1.5rem;color:#6a5040;min-width:200px;max-width:300px;font-style:italic;}
+
+tbody tr.task-row{transition:background-color 0.12s;}
+tbody tr.task-row:hover{background-color:rgba(184,115,51,0.12) !important;}
+/* make sure section-cell keeps its bg on hover */
+tbody tr.task-row:hover td.section-cell{background:#f0dbb5 !important;}
+tr.section-sep td{height:3px;padding:0;border:none;}
+
+/* ─── TOOLTIP ─── */
+.tooltip{display:none;position:fixed;z-index:1000;background:var(--bg-dark);color:var(--text-light);font-family:var(--font-body);font-size:0.85rem;padding:0.8rem 1.1rem;border-radius:6px;max-width:400px;box-shadow:0 4px 16px rgba(0,0,0,0.4);border:1px solid var(--accent-copper);line-height:1.5;pointer-events:none;}
+.tooltip strong{color:var(--accent-gold);font-family:var(--font-heading);font-size:0.72rem;letter-spacing:0.5px;}
+.tooltip .tt-section{color:var(--accent-copper);font-size:0.65rem;text-transform:uppercase;}
+.tooltip .tt-dates{color:#b0a080;margin-top:0.3rem;}
+
+.footer{text-align:center;padding:1.5rem;font-size:0.65rem;color:#8b7355;font-family:var(--font-heading);letter-spacing:1px;}
+.back-to-top{position:fixed;bottom:20px;right:70px;z-index:200;width:44px;height:44px;border-radius:50%;background:var(--bg-dark);color:var(--accent-gold);border:2px solid var(--accent-copper);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:all 0.2s;opacity:0;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+.back-to-top.visible{opacity:1;pointer-events:auto;}
+.back-to-top:hover{background:var(--accent-copper);color:#fff;transform:scale(1.1);}
+</style>
+</head>
+<body>
+
+<div class="title-bar">
+  <div class="main-title">Ramble–TCM 2026 Program Schedule</div>
+  <span class="version">v4.8.2026</span>
+  <div class="subtitle">Master Construction &amp; Procurement Timeline &nbsp;│&nbsp; 66 Tasks &nbsp;│&nbsp; 12 Sections</div>
+</div>
+
+<div class="legend-bar" id="legend"></div>
+<div class="markers-legend">
+  <div class="marker-legend-item"><div class="marker-line-sample" style="border-color:rgba(34,139,34,0.7)"></div> Project Start (Apr 7)</div>
+  <div class="marker-legend-item"><div class="marker-line-sample" style="border-color:rgba(220,20,60,0.7)"></div> Construction Phase Amendment Projected Signing (Jun 30)</div>
+</div>
+
+<nav class="section-nav" id="sectionNav">
+  <span class="section-nav-label">⚡ Jump to:</span>
+</nav>
+
+<div class="scroll-progress-wrap"><div class="scroll-progress-bar" id="scrollProgress"></div></div>
+
+<div class="scroll-arrow scroll-arrow-left hidden" id="arrowLeft" title="Scroll Left">◄</div>
+<div class="scroll-arrow scroll-arrow-right" id="arrowRight" title="Scroll Right">►</div>
+
+<div class="schedule-wrapper" id="scheduleWrap">
+  <table id="schedule-table"></table>
+</div>
+
+<div class="back-to-top" id="backToTop" title="Back to top">▲</div>
+<div class="tooltip" id="tooltip"></div>
+<div class="footer">© 2026 Ramble × TCM &nbsp;—&nbsp; Confidential Program Document</div>
+
+<script>
+// ═══════════════ HELPERS ═══════════════
+const PX_PER_DAY=6,GANTT_WIDTH=1200;
+function D(y,m,d){return new Date(y,m-1,d);}
+function addD(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
+function diffD(a,b){return Math.round((b-a)/864e5);}
+function fmtD(d){const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return m[d.getMonth()]+' '+String(d.getDate()).padStart(2,'0');}
+function fmtFull(d){const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return m[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+const PROJECT_START=D(2026,4,7),PERMIT_DEADLINE=D(2026,6,30),CHART_START=D(2026,4,1);
+const SECTION_ORDER=['Launch','Ramble Pre-Construction','TCM Pre-Construction','Shared Pre-Construction','Warehousing','Procurement','Ramble Construction','TCM Macro Logistics','TCM Micro Logistics','TCM Construction','AIA Housekeeping — A481 Overhead','AIA Housekeeping — CPA'];
+const SECTION_COLORS={'Launch':'#999999','Ramble Pre-Construction':'#4C78A8','TCM Pre-Construction':'#72B7B2','Shared Pre-Construction':'#9C755F','Warehousing':'#59A14F','Procurement':'#76B7B2','Ramble Construction':'#F28E2B','TCM Macro Logistics':'#EDC948','TCM Micro Logistics':'#B6992D','TCM Construction':'#E15759','AIA Housekeeping — A481 Overhead':'#B07AA1','AIA Housekeeping — CPA':'#AF7AA1'};
+
+// ═══════════════ TASKS ═══════════════
+const tasks=[
+{id:'1',label:'Ramble TCM 2026 Program Launch',section:'Launch',duration:1,deps:[]},
+{id:'2',label:'Ramble Enters Inspection / Diligence Period for Land',section:'Ramble Pre-Construction',duration:21,deps:['1']},
+{id:'3',label:'Soil Samples / Geotech / Site Assessments',section:'Ramble Pre-Construction',duration:36,deps:['1']},
+{id:'4',label:'Campground Selection Date / Lease or Deed Event',section:'Ramble Pre-Construction',duration:21,deps:['3']},
+{id:'5',label:'Final Product Configuration',section:'Ramble Pre-Construction',duration:7,deps:['13','4']},
+{id:'6',label:'Retain Grading / Excavation / Civil / Landscaping Subs',section:'Ramble Pre-Construction',duration:84,deps:['1']},
+{id:'7',label:'Permitting / Approvals',section:'Ramble Pre-Construction',duration:21,deps:['12']},
+{id:'8',label:'Bind Insurance',section:'TCM Pre-Construction',duration:5,deps:['1']},
+{id:'9',label:'Retain Supply Chain / Production Chain',section:'TCM Pre-Construction',duration:84,deps:['1']},
+{id:'10',label:'Secure Storage Lot Lease',section:'TCM Pre-Construction',duration:10,deps:['8']},
+{id:'11',label:'Price SOV / RFQ to Suppliers',section:'TCM Pre-Construction',duration:16,deps:['1']},
+{id:'12',label:'Cost Estimates / GMP Proposal',section:'TCM Pre-Construction',duration:74,deps:[]},
+{id:'13',label:'Design Freeze Date on Modules',section:'Shared Pre-Construction',duration:16,deps:['1']},
+{id:'14',label:'Shop Drawings',section:'Shared Pre-Construction',duration:54,deps:['1']},
+{id:'15',label:'Execute GMP Amendment / Campground Amendment / CPA',section:'Shared Pre-Construction',duration:5,deps:['12']},
+{id:'16',label:'Purchase and Store Shipping Containers',section:'Warehousing',duration:10,deps:['10']},
+{id:'17',label:'Paint Shipping Containers',section:'Warehousing',duration:7,deps:['16']},
+{id:'18',label:'Move Ramble HQ Inventory to Holyoke',section:'Warehousing',duration:7,deps:['17']},
+{id:'19',label:'OFM Shipping List / DACF Inventory & Custody Transfer',section:'Warehousing',duration:5,deps:['18']},
+{id:'20',label:'Ongoing OFM / DACF Inventory & Custody Mgmt',section:'Warehousing',duration:130,deps:['19']},
+{id:'21',label:'Construction Phase Begins',section:'Procurement',duration:1,deps:['7']},
+{id:'22',label:'Commission Warehousing / Fill Containers w/ Ship Loose',section:'Procurement',duration:7,deps:['19','21']},
+{id:'23',label:'Lumber Procurement',section:'Procurement',duration:14,deps:['21']},
+{id:'24',label:'Ground Screws Procurement',section:'Procurement',duration:10,deps:['21']},
+{id:'25',label:'Windows and Doors Procurement',section:'Procurement',duration:18,deps:['21']},
+{id:'26',label:'Siding Procurement',section:'Procurement',duration:14,deps:['21']},
+{id:'27',label:'Metals Procurement',section:'Procurement',duration:14,deps:['21']},
+{id:'28',label:'Demo / Clearing',section:'Ramble Construction',duration:7,deps:['21']},
+{id:'29',label:'Construction Office / Security / Waste / Sanitation',section:'Ramble Construction',duration:5,deps:['21']},
+{id:'30',label:'Secure Site Storage / Security',section:'Ramble Construction',duration:7,deps:['21']},
+{id:'31',label:'Grading / Excavation',section:'Ramble Construction',duration:12,deps:['21','6','30']},
+{id:'32',label:'Utility Permits / Utility Work',section:'Ramble Construction',duration:12,deps:['7']},
+{id:'33',label:'Civils — Plumbing',section:'Ramble Construction',duration:10,deps:['31','32']},
+{id:'34',label:'Civils — Electrical',section:'Ramble Construction',duration:10,deps:['31','32']},
+{id:'35',label:'Site Prep Complete / Foundations Ready',section:'Ramble Construction',duration:3,deps:['33','34']},
+{id:'36',label:'Landscaping',section:'Ramble Construction',duration:10,deps:['47']},
+{id:'37',label:'Crew Mobilization',section:'TCM Macro Logistics',duration:5,deps:['35']},
+{id:'38',label:'Stage Modules / Load on Trailers',section:'TCM Macro Logistics',duration:30,deps:['21','9','11','23','24','25','26','27']},
+{id:'39',label:'Transport to Site',section:'TCM Macro Logistics',duration:1,deps:['31']},
+{id:'40',label:'Telehandler Procurement',section:'TCM Micro Logistics',duration:1,deps:['35']},
+{id:'41',label:'DACF §3 — Staging Acceptance / Custody to Ramble',section:'TCM Micro Logistics',duration:1,deps:['35']},
+{id:'42',label:'DACF §4 — Pre-Retrieval Condition Report / Custody to TCM',section:'TCM Micro Logistics',duration:1,deps:['35']},
+{id:'43',label:'DACF §5 — Affixation Acceptance / Custody to Ramble',section:'TCM Micro Logistics',duration:1,deps:['35']},
+{id:'44',label:'Metal Amenity Production',section:'TCM Construction',duration:18,deps:['21','9','7','27']},
+{id:'45',label:'Volumetric Factory Production',section:'TCM Construction',duration:30,deps:['21','9','11','23','24','25','26','27']},
+{id:'46',label:'Ground Screws / Concrete Foundations',section:'TCM Construction',duration:8,deps:['35','37']},
+{id:'47',label:'Install Structures / Amenities / Set Modules',section:'TCM Construction',duration:10,deps:['46']},
+{id:'48',label:'Plumbing / Electrical / Amenity Finishes / Hookups',section:'TCM Construction',duration:10,deps:['47']},
+{id:'49',label:'TCM Substantial Completion',section:'TCM Construction',duration:1,deps:['48']},
+{id:'50',label:'TCM Completes Install / Leaves Site',section:'TCM Construction',duration:1,deps:['49']},
+{id:'51',label:'TCM Warranty Period Begins',section:'TCM Construction',duration:1,deps:['50']},
+{id:'52',label:'A481 Overhead G702/G703 — May 1',section:'AIA Housekeeping — A481 Overhead',duration:1,deps:['1']},
+{id:'53',label:'A481 Overhead G702/G703 — Jun 1',section:'AIA Housekeeping — A481 Overhead',duration:1,deps:['52']},
+{id:'54',label:'A481 Overhead G702/G703 — Jul 1',section:'AIA Housekeeping — A481 Overhead',duration:1,deps:['53']},
+{id:'55',label:'A481 Overhead G702/G703 — Aug 1',section:'AIA Housekeeping — A481 Overhead',duration:1,deps:['54']},
+{id:'56',label:'A481 Overhead G702/G703 — Sep 1',section:'AIA Housekeeping — A481 Overhead',duration:1,deps:['55']},
+{id:'57',label:'CPA G702/G703 — Jul 1',section:'AIA Housekeeping — CPA',duration:1,deps:['15']},
+{id:'58',label:'G901 Conditional Waiver & Release — Jul 1',section:'AIA Housekeeping — CPA',duration:1,deps:['15']},
+{id:'59',label:'CPA G702/G703 — Aug 1',section:'AIA Housekeeping — CPA',duration:1,deps:['57']},
+{id:'60',label:'G901 Conditional Waiver & Release — Aug 1',section:'AIA Housekeeping — CPA',duration:1,deps:['58']},
+{id:'61',label:'CPA G702/G703 — Sep 1',section:'AIA Housekeeping — CPA',duration:1,deps:['59']},
+{id:'62',label:'G901 Conditional Waiver & Release — Sep 1',section:'AIA Housekeeping — CPA',duration:1,deps:['60']},
+{id:'63',label:'TCM Final Inspection for Payment',section:'AIA Housekeeping — CPA',duration:2,deps:['49','61']},
+{id:'64',label:'TCM Final Accounting / Ramble Audit',section:'AIA Housekeeping — CPA',duration:4,deps:['63']},
+{id:'65',label:'G706A Contractor\'s Affidavit of Release of Liens',section:'AIA Housekeeping — CPA',duration:1,deps:['64']},
+{id:'66',label:'TCM Final Payment',section:'AIA Housekeeping — CPA',duration:1,deps:['65']}
+];
+
+// ═══════════════ ASSIGNMENTS ═══════════════
+const A={
+'1':{r1:'',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:'A181 + A281 + A481'},
+'2':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:''},
+'3':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:''},
+'4':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:'Lease or Deed'},
+'5':{r1:'Marc',r2:'Marc',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:'Layout Design Docs'},
+'6':{r1:'',r2:'',r3:'Marc',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:'Subcontracts, Insurances'},
+'7':{r1:'',r2:'',r3:'Marc',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:'Permit'},
+'8':{r1:'',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:'Signed Policy'},
+'9':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'',t3:'Bret W., Cody W.',t4:'',t5:'',t6:'Jack, Bradley',n:''},
+'10':{r1:'',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Bradley',n:'Lease'},
+'11':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'Bradley',t3:'Bret W.',t4:'Brett C.',t5:'',t6:'Jack, Michael, Bradley',n:'RFQs'},
+'12':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'',t3:'Bret W.',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'13':{r1:'',r2:'Marc',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Bradley',n:'Final Stamped Drawings'},
+'14':{r1:'',r2:'Marc',r3:'',r4:'',t1:'Bret W., Cody W., Bradley, Brett, Tyler',t2:'',t3:'',t4:'',t5:'',t6:'Jack',n:''},
+'15':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Bradley',n:'A481 Construction Amendment'},
+'16':{r1:'',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:''},
+'17':{r1:'',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'Bradley, Angel',t6:'',n:''},
+'18':{r1:'',r2:'',r3:'',r4:'Emma',t1:'',t2:'',t3:'',t4:'Brett C., Bradley, Angel',t5:'',t6:'',n:''},
+'19':{r1:'',r2:'',r3:'',r4:'Emma',t1:'',t2:'',t3:'Bradley, Angel',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'20':{r1:'',r2:'',r3:'',r4:'Emma',t1:'',t2:'',t3:'Bradley, Angel',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'21':{r1:'Marc',r2:'',r3:'',r4:'Emma',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'22':{r1:'',r2:'',r3:'',r4:'Emma',t1:'Tyler',t2:'',t3:'Bradley, Angel',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'23':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'',t3:'Bradley, Angel',t4:'Brett C.',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'24':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'',t3:'Bradley, Angel',t4:'Brett C.',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'25':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'',t3:'Bradley, Angel',t4:'Brett C.',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'26':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'',t3:'Bradley, Angel',t4:'Brett C.',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'27':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'',t3:'Bradley, Bret W.',t4:'Brett C.',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'28':{r1:'',r2:'',r3:'Marc',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:''},
+'29':{r1:'',r2:'',r3:'Marc',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:''},
+'30':{r1:'',r2:'',r3:'Marc',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:''},
+'31':{r1:'',r2:'',r3:'Marc',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:''},
+'32':{r1:'',r2:'',r3:'Marc',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:''},
+'33':{r1:'',r2:'',r3:'Marc',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'Brett W.',t6:'',n:''},
+'34':{r1:'',r2:'',r3:'Marc',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:''},
+'35':{r1:'',r2:'',r3:'Marc',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:''},
+'36':{r1:'',r2:'',r3:'Marc',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'',n:''},
+'37':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'',t3:'',t4:'Brett C., Angel, Bradley',t5:'',t6:'',n:''},
+'38':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'',t3:'Brett C., Angel, Bradley',t4:'',t5:'',t6:'',n:''},
+'39':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'',t3:'',t4:'Brett C., Angel, Bradley',t5:'',t6:'',n:''},
+'40':{r1:'',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'Brett C., Bradley',t5:'',t6:'',n:''},
+'41':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'42':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'43':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'44':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'Bradley',t3:'Bret W., Bradley',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'45':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'Bradley',t3:'Cody W., Angel T., Bradley',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'46':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'Bradley',t3:'',t4:'',t5:'Brett C., Angel, Bradley',t6:'Jack, Michael, Bradley',n:''},
+'47':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'',t3:'',t4:'',t5:'Brett C., Angel, Bradley',t6:'Jack, Michael, Bradley',n:''},
+'48':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'',t3:'',t4:'',t5:'Brett C., Angel, Bradley',t6:'Jack, Michael, Bradley',n:''},
+'49':{r1:'Marc',r2:'',r3:'',r4:'',t1:'Tyler',t2:'Bradley',t3:'',t4:'',t5:'Angel',t6:'Jack, Michael, Bradley',n:''},
+'50':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'',t3:'',t4:'Brett C., Bradley',t5:'Angel',t6:'',n:''},
+'51':{r1:'',r2:'',r3:'',r4:'',t1:'Tyler',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'52':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'53':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'54':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'55':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'56':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'57':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'58':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'59':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'60':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'61':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'62':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'63':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'64':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'65':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''},
+'66':{r1:'Marc',r2:'',r3:'',r4:'',t1:'',t2:'',t3:'',t4:'',t5:'',t6:'Jack, Michael, Bradley',n:''}
+};
+
+// ═══════════════ SCHEDULING ═══════════════
+function schedule(tl,ps){const tm={};tl.forEach(t=>{tm[t.id]={...t};});const ig={},gr={};tl.forEach(t=>{ig[t.id]=0;gr[t.id]=[];});tl.forEach(t=>t.deps.forEach(d=>{gr[d].push(t.id);ig[t.id]++;}));const q=Object.keys(ig).filter(k=>ig[k]===0),o=[];while(q.length){const n=q.shift();o.push(n);gr[n].forEach(x=>{ig[x]--;if(!ig[x])q.push(x);});}o.forEach(tid=>{const t=tm[tid];if(!t.deps.length)t.start=new Date(ps);else{let mx=new Date(0);t.deps.forEach(d=>{if(tm[d].finish>mx)mx=new Date(tm[d].finish);});t.start=mx;}t.finish=addD(t.start,t.duration);});return tm;}
+function reprop(tm,tl,fx){const dm={};tl.forEach(t=>{dm[t.id]=t.deps;});const ids=Object.keys(tm),ig={},gr={};ids.forEach(i=>{ig[i]=0;gr[i]=[];});ids.forEach(i=>(dm[i]||[]).forEach(d=>{gr[d].push(i);ig[i]++;}));const q=ids.filter(i=>!ig[i]),o=[];while(q.length){const n=q.shift();o.push(n);gr[n].forEach(x=>{ig[x]--;if(!ig[x])q.push(x);});}o.forEach(tid=>{if(fx.has(tid))return;const deps=dm[tid]||[];if(deps.length){let mx=new Date(0);deps.forEach(d=>{if(tm[d].finish>mx)mx=new Date(tm[d].finish);});tm[tid].start=mx;tm[tid].finish=addD(mx,tm[tid].duration);}});}
+
+const tm=schedule(tasks,PROJECT_START);
+const fixedDates={'52':D(2026,5,1),'53':D(2026,6,1),'54':D(2026,7,1),'55':D(2026,8,1),'56':D(2026,9,1),'57':D(2026,7,1),'58':D(2026,7,1),'59':D(2026,8,1),'60':D(2026,8,1),'61':D(2026,9,1),'62':D(2026,9,1)};
+Object.entries(fixedDates).forEach(([id,dt])=>{if(tm[id]){tm[id].start=dt;tm[id].finish=addD(dt,tm[id].duration);}});
+tm['7'].finish=addD(PERMIT_DEADLINE,1);tm['7'].start=addD(tm['7'].finish,-tm['7'].duration);
+const fixedSet=new Set([...Object.keys(fixedDates),'7']);
+reprop(tm,tasks,fixedSet);
+tm['39'].finish=new Date(tm['47'].finish);
+['40','41','42','43'].forEach(id=>{tm[id].start=new Date(tm['37'].start);tm[id].finish=new Date(tm['50'].finish);});
+tm['51'].finish=addD(tm['51'].start,365);
+const sorted=[];SECTION_ORDER.forEach(sec=>{tasks.filter(t=>t.section===sec).sort((a,b)=>+a.id- +b.id).forEach(t=>sorted.push(tm[t.id]));});
+sorted.forEach((t,i)=>{t.displayNum=i+1;const a=A[t.id]||{};
+  t.r1=a.r1||'';t.r2=a.r2||'';t.r3=a.r3||'';t.r4=a.r4||'';
+  t.tcm1=a.t1||'';t.tcm2=a.t2||'';t.tcm3=a.t3||'';t.tcm4=a.t4||'';t.tcm5=a.t5||'';t.tcm6=a.t6||'';
+  t.notes=a.n||'';
+});
+
+// ═══════════════ LEGEND + NAV ═══════════════
+const legendEl=document.getElementById('legend');
+SECTION_ORDER.forEach(s=>{const c=SECTION_COLORS[s];legendEl.innerHTML+=`<div class="legend-item"><div class="legend-swatch" style="background:${c}"></div>${s}</div>`;});
+const navEl=document.getElementById('sectionNav');
+SECTION_ORDER.forEach(s=>{const c=SECTION_COLORS[s];const sh=s.replace('AIA Housekeeping — ','').replace('Pre-Construction','Pre-Con').replace('Construction','Constr').replace('Macro ','').replace('Micro ','');navEl.innerHTML+=`<button class="section-nav-btn" data-section="${s}" style="border-left:3px solid ${c}">${sh}</button>`;});
+
+// ═══════════════ RENDER ═══════════════
+function buildTimeAxis(){
+  let h='<div class="time-axis-wrap">';
+  for(let day=0;day<=196;day+=14){const dt=addD(CHART_START,day);const px=day*PX_PER_DAY;h+=`<div class="time-tick" style="left:${px}px"><div class="tick-label">${fmtD(dt)}</div><div class="tick-line"></div></div>`;}
+  const sp=diffD(CHART_START,PROJECT_START)*PX_PER_DAY;
+  h+=`<div class="time-marker" style="left:${sp}px"><div class="tmark-label start-label">▶ Project Start</div><div class="tmark-line start-line"></div></div>`;
+  const dp=diffD(CHART_START,PERMIT_DEADLINE)*PX_PER_DAY;
+  h+=`<div class="time-marker" style="left:${dp}px"><div class="tmark-label deadline-label">⚑ CPA Signing</div><div class="tmark-line deadline-line"></div></div>`;
+  h+='</div>';return h;
+}
+
+function render(){
+  const tbl=document.getElementById('schedule-table');
+  let h=`<thead>
+    <tr>
+      <th rowspan="2" class="corner-th" style="min-width:170px;width:170px">Section</th>
+      <th rowspan="2" class="gantt-th">${buildTimeAxis()}</th>
+      <th rowspan="2" style="min-width:320px">Task</th>
+      <th colspan="4" class="ramble-group">Ramble</th>
+      <th colspan="6" class="tcm-group">TCM</th>
+      <th rowspan="2" style="min-width:210px">Deliverables</th>
+    </tr>
+    <tr>
+      <th class="sub-header" style="min-width:100px">Owner</th>
+      <th class="sub-header" style="min-width:100px">Architect</th>
+      <th class="sub-header" style="min-width:100px">Constr Mgr</th>
+      <th class="sub-header" style="min-width:100px">Operations</th>
+      <th class="sub-header" style="min-width:100px">Data / Design</th>
+      <th class="sub-header" style="min-width:100px">QC</th>
+      <th class="sub-header" style="min-width:100px">Factory</th>
+      <th class="sub-header" style="min-width:100px">Logistics</th>
+      <th class="sub-header" style="min-width:100px">Field Ops</th>
+      <th class="sub-header" style="min-width:100px">Admin</th>
+    </tr>
+  </thead><tbody>`;
+
+  const groups={};sorted.forEach(t=>{if(!groups[t.section])groups[t.section]=[];groups[t.section].push(t);});
+  let rowIdx=0;
+  SECTION_ORDER.forEach(sec=>{
+    const grp=groups[sec];if(!grp||!grp.length)return;
+    const c=SECTION_COLORS[sec],cnt=grp.length;
+    grp.forEach((t,i)=>{
+      rowIdx++;
+      const sd=diffD(CHART_START,t.start),dur=diffD(t.start,t.finish);
+      const lx=sd*PX_PER_DAY,wx=Math.max(dur*PX_PER_DAY,5);
+      const bg=rowIdx%2===0?`${c}08`:'transparent';
+      const ds=fmtD(t.start),df_=fmtD(t.finish);
+      const excluded=['20','51'],finishStr=excluded.includes(t.id)?'ongoing':df_;
+      h+=`<tr class="task-row" style="background:${bg}" data-id="${t.id}" data-section="${sec}">`;
+      if(i===0)h+=`<td class="section-cell" rowspan="${cnt}" style="border-left-color:${c};color:${c}" id="sec-${sec.replace(/[^a-zA-Z]/g,'')}">${sec}</td>`;
+      h+=`<td class="gantt-cell"><div class="gantt-bar" style="left:${lx}px;width:${Math.min(wx,GANTT_WIDTH-lx)}px;background:${c};" data-tip="${t.displayNum}. ${esc(t.label)}|${fmtFull(t.start)} → ${excluded.includes(t.id)?'Ongoing':fmtFull(t.finish)}|${sec}"><span class="bar-num">${t.displayNum}</span></div></td>`;
+      h+=`<td class="task-cell">${t.displayNum}. ${esc(t.label)}</td>`;
+      h+=`<td class="assign-cell">${esc(t.r1)}</td><td class="assign-cell">${esc(t.r2)}</td>`;
+      h+=`<td class="assign-cell">${esc(t.r3)}</td><td class="assign-cell">${esc(t.r4)}</td>`;
+      h+=`<td class="assign-cell">${esc(t.tcm1)}</td><td class="assign-cell">${esc(t.tcm2)}</td>`;
+      h+=`<td class="assign-cell">${esc(t.tcm3)}</td><td class="assign-cell">${esc(t.tcm4)}</td>`;
+      h+=`<td class="assign-cell">${esc(t.tcm5)}</td><td class="assign-cell">${esc(t.tcm6)}</td>`;
+      h+=`<td class="notes-cell">${esc(t.notes)}</td></tr>`;
+    });
+    h+=`<tr class="section-sep"><td colspan="14" style="background:${c}40;height:3px;padding:0;border:none;"></td></tr>`;
+  });
+  h+='</tbody>';tbl.innerHTML=h;
+
+  // Tooltips
+  const tip=document.getElementById('tooltip');
+  document.querySelectorAll('.gantt-bar').forEach(bar=>{
+    bar.addEventListener('mouseenter',e=>{const p=(bar.dataset.tip||'').split('|');tip.innerHTML=`<strong>${p[0]||''}</strong><div class="tt-section">${p[2]||''}</div><div class="tt-dates">${p[1]||''}</div>`;tip.style.display='block';});
+    bar.addEventListener('mousemove',e=>{tip.style.left=(e.clientX+16)+'px';tip.style.top=(e.clientY-12)+'px';});
+    bar.addEventListener('mouseleave',()=>{tip.style.display='none';});
+  });
+}
+render();
+
+// ═══════════════ FROZEN HEADER: measure row 1 and pin row 2 ═══════════════
+function fixStickyHeaders(){
+  const row1=document.querySelector('thead tr:first-child');
+  const row2=document.querySelector('thead tr:nth-child(2)');
+  if(!row1||!row2)return;
+  const h1=row1.getBoundingClientRect().height;
+  row2.querySelectorAll('th').forEach(th=>{
+    th.style.top=h1+'px';
+  });
+}
+fixStickyHeaders();
+window.addEventListener('resize',fixStickyHeaders);
+
+// ═══════════════ DYNAMIC WRAPPER HEIGHT ═══════════════
+const wrap=document.getElementById('scheduleWrap');
+function updateWrapperHeight(){
+  const top=wrap.getBoundingClientRect().top;
+  const avail=window.innerHeight-top-8;
+  wrap.style.maxHeight=Math.max(avail,350)+'px';
+}
+updateWrapperHeight();
+window.addEventListener('scroll',updateWrapperHeight);
+window.addEventListener('resize',updateWrapperHeight);
+
+// ═══════════════ SCROLL NAVIGATION ═══════════════
+const progressBar=document.getElementById('scrollProgress');
+const arrowL=document.getElementById('arrowLeft');
+const arrowR=document.getElementById('arrowRight');
+const backTop=document.getElementById('backToTop');
+
+function updateProgress(){
+  const max=wrap.scrollWidth-wrap.clientWidth;
+  const pct=max>0?(wrap.scrollLeft/max)*100:0;
+  progressBar.style.width=pct+'%';
+  arrowL.classList.toggle('hidden',wrap.scrollLeft<10);
+  arrowR.classList.toggle('hidden',wrap.scrollLeft>=max-10);
+}
+wrap.addEventListener('scroll',updateProgress);
+window.addEventListener('resize',updateProgress);
+setTimeout(updateProgress,100);
+
+// Arrow hold-to-scroll
+let arrowInt=null;
+function startScroll(dir){stopScroll();const s=()=>{wrap.scrollLeft+=dir*14;};s();arrowInt=setInterval(s,16);}
+function stopScroll(){if(arrowInt){clearInterval(arrowInt);arrowInt=null;}}
+arrowL.addEventListener('mousedown',()=>startScroll(-1));arrowR.addEventListener('mousedown',()=>startScroll(1));
+arrowL.addEventListener('touchstart',e=>{e.preventDefault();startScroll(-1);});arrowR.addEventListener('touchstart',e=>{e.preventDefault();startScroll(1);});
+document.addEventListener('mouseup',stopScroll);document.addEventListener('touchend',stopScroll);
+
+// Drag scroll
+let isDrag=false,sx=0,sy=0,slx=0,sly=0;
+wrap.addEventListener('mousedown',e=>{if(e.target.closest('.gantt-bar'))return;isDrag=true;sx=e.pageX;sy=e.pageY;slx=wrap.scrollLeft;sly=wrap.scrollTop;wrap.classList.add('dragging');});
+document.addEventListener('mousemove',e=>{if(!isDrag)return;e.preventDefault();wrap.scrollLeft=slx-(e.pageX-sx);wrap.scrollTop=sly-(e.pageY-sy);});
+document.addEventListener('mouseup',()=>{isDrag=false;wrap.classList.remove('dragging');});
+
+// Mousewheel → horizontal when not over vertical overflow
+wrap.addEventListener('wheel',e=>{
+  if(Math.abs(e.deltaX)>Math.abs(e.deltaY))return;
+  const maxX=wrap.scrollWidth-wrap.clientWidth;
+  if(maxX<=0)return;
+  // If there's vertical room to scroll, let vertical scroll happen naturally
+  const maxY=wrap.scrollHeight-wrap.clientHeight;
+  if(maxY>10){return;} // let native vertical scroll work
+  e.preventDefault();wrap.scrollLeft+=e.deltaY*2;
+},{passive:false});
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+  const t=e.target.tagName;if(t==='INPUT'||t==='TEXTAREA'||t==='SELECT')return;
+  if(e.key==='ArrowRight'){e.preventDefault();wrap.scrollLeft+=140;}
+  if(e.key==='ArrowLeft'){e.preventDefault();wrap.scrollLeft-=140;}
+  if(e.key==='Home'&&e.ctrlKey){e.preventDefault();wrap.scrollLeft=0;wrap.scrollTop=0;}
+  if(e.key==='End'&&e.ctrlKey){e.preventDefault();wrap.scrollLeft=wrap.scrollWidth;}
+});
+
+// Section jump nav — scroll WITHIN the wrapper
+document.querySelectorAll('.section-nav-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const sec=btn.dataset.section;
+    const id='sec-'+sec.replace(/[^a-zA-Z]/g,'');
+    const el=document.getElementById(id);
+    if(el){
+      const elRect=el.getBoundingClientRect();
+      const wrapRect=wrap.getBoundingClientRect();
+      // Scroll wrapper vertically so section is near top (below frozen header)
+      const headerH=document.querySelector('thead').getBoundingClientRect().height;
+      wrap.scrollTop+=elRect.top-wrapRect.top-headerH-4;
+      // Flash
+      el.style.transition='background 0.3s';el.style.background='rgba(201,162,39,0.4)';
+      setTimeout(()=>{el.style.background='';},1200);
+    }
+    document.querySelectorAll('.section-nav-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// Track visible section
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{if(entry.isIntersecting){
+    const tr=entry.target.closest('tr');
+    const sec=tr?tr.dataset.section:null;
+    if(sec)document.querySelectorAll('.section-nav-btn').forEach(b=>{b.classList.toggle('active',b.dataset.section===sec);});
+  }});
+},{root:wrap,threshold:0.3});
+document.querySelectorAll('.section-cell').forEach(cell=>{observer.observe(cell);});
+
+// Back to top
+window.addEventListener('scroll',()=>{backTop.classList.toggle('visible',window.scrollY>300);});
+backTop.addEventListener('click',()=>{window.scrollTo({top:0,behavior:'smooth'});wrap.scrollTop=0;});
+
+// ═══════════════ DEPENDENCY ARROWS ═══════════════
+(function drawArrows(){
+  const MAJOR=new Set(['7','15','21','31','35','37','39','46','47','49','63']);
+  const tbl=document.getElementById('schedule-table');
+  const wrapRect=wrap.getBoundingClientRect();
+  const cp={};
+  document.querySelectorAll('tr.task-row').forEach(tr=>{
+    const id=tr.dataset.id;const gc=tr.querySelector('td.gantt-cell');
+    if(gc){const r=gc.getBoundingClientRect();cp[id]={left:r.left-wrapRect.left+wrap.scrollLeft,top:r.top-wrapRect.top+wrap.scrollTop,height:r.height};}
+  });
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.style.cssText='position:absolute;top:0;left:0;pointer-events:none;z-index:5;overflow:visible;';
+  svg.setAttribute('width',tbl.offsetWidth);svg.setAttribute('height',tbl.offsetHeight);
+  const defs=document.createElementNS('http://www.w3.org/2000/svg','defs');
+  defs.innerHTML=`<marker id="ah" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="rgba(100,70,40,0.25)"/></marker>`;
+  svg.appendChild(defs);
+  const dm={};tasks.forEach(t=>{dm[t.id]=t.deps;});
+  sorted.forEach(t=>{
+    if(!MAJOR.has(t.id))return;const tp=cp[t.id];if(!tp)return;
+    const tx=tp.left+diffD(CHART_START,t.start)*PX_PER_DAY,ty=tp.top+tp.height/2;
+    (dm[t.id]||[]).forEach(did=>{
+      const dt=tm[did],dp=cp[did];if(!dt||!dp)return;
+      const dx=dp.left+diffD(CHART_START,dt.finish)*PX_PER_DAY,dy=dp.top+dp.height/2;
+      const mx=dx+(tx-dx)*0.5;
+      const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+      p.setAttribute('d',`M${dx},${dy} C${mx},${dy} ${mx},${ty} ${tx},${ty}`);
+      p.setAttribute('fill','none');p.setAttribute('stroke','rgba(100,70,40,0.18)');
+      p.setAttribute('stroke-width','1.2');p.setAttribute('marker-end','url(#ah)');
+      svg.appendChild(p);
+    });
+  });
+  wrap.appendChild(svg);
+})();
+</script>
+</body>
+</html>
