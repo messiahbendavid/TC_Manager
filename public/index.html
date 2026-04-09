@@ -46,7 +46,6 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   font-family:var(--font-body); transition:all 0.2s; position:relative; z-index:1;
 }
 .menu-toggle:hover { background:var(--accent-copper); color:#fff; }
-
 .title-content { flex:1; text-align:center; position:relative; z-index:1; }
 .main-title {
   font-family:var(--font-heading); font-size:2.2rem; font-weight:900;
@@ -58,15 +57,13 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   gap:1.5rem; margin-top:0.5rem; flex-wrap:wrap;
 }
 .subtitle {
-  font-family:var(--font-body); font-size:0.8rem; color:var(--text-muted);
-  letter-spacing:1px;
+  font-family:var(--font-body); font-size:0.8rem; color:var(--text-muted); letter-spacing:1px;
 }
 .viewing-badge {
   font-family:var(--font-heading); font-size:0.65rem; color:var(--accent-copper);
   letter-spacing:1.5px; text-transform:uppercase;
   padding:5px 14px; border:1px solid rgba(184,115,51,0.4);
-  border-radius:4px; background:rgba(184,115,51,0.08);
-  white-space:nowrap; transition:all 0.3s;
+  border-radius:4px; background:rgba(184,115,51,0.08); white-space:nowrap;
 }
 .viewing-badge.is-current { border-color:var(--accent-gold); color:var(--accent-gold); background:rgba(201,162,39,0.1); }
 
@@ -79,9 +76,7 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   z-index:900; transition:transform 0.3s ease;
 }
 .sidebar-header {
-  padding:1.4rem 1.2rem 1rem;
-  border-bottom:1px solid var(--border-main);
-  flex-shrink:0;
+  padding:1.4rem 1.2rem 1rem; border-bottom:1px solid var(--border-main); flex-shrink:0;
 }
 .sidebar-header h2 {
   font-family:var(--font-heading); font-size:0.7rem; font-weight:600;
@@ -117,31 +112,70 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 .version-card.active .v-name { color:var(--accent-gold); }
 .v-name {
   font-family:var(--font-heading); font-size:0.8rem; font-weight:700;
-  color:var(--text-light); letter-spacing:1px; transition:color 0.2s;
+  color:var(--text-light); letter-spacing:1px;
 }
 .v-date { font-size:0.68rem; color:var(--text-muted); margin-top:0.3rem; }
 .v-desc { font-size:0.68rem; color:var(--accent-copper); margin-top:0.35rem; line-height:1.4; font-style:italic; }
 .badge {
   display:inline-block; font-family:var(--font-heading); font-size:0.45rem;
   font-weight:700; padding:2px 8px; border-radius:3px;
-  letter-spacing:1px; text-transform:uppercase; margin-left:0.6rem;
-  vertical-align:middle;
+  letter-spacing:1px; text-transform:uppercase; margin-left:0.6rem; vertical-align:middle;
 }
 .badge-current { background:var(--accent-gold); color:var(--bg-dark); }
-.badge-draft { background:rgba(184,115,51,0.3); color:var(--accent-copper); border:1px solid var(--accent-copper); }
 
 /* ═══ MAIN CONTENT ═══ */
 .content {
   position:fixed; top:var(--header-h); left:var(--sidebar-w);
   right:0; bottom:0; background:#f5e6c8;
 }
-.content iframe { width:100%; height:100%; border:none; display:block; }
+.iframe-container {
+  position:absolute; inset:0; overflow:hidden;
+}
+.iframe-container iframe {
+  position:absolute; top:0; left:0;
+  transform-origin:0 0; border:none; display:block;
+}
+
+/* ═══ ZOOM TOOLBAR ═══ */
+.zoom-toolbar {
+  position:absolute; bottom:24px; right:24px; z-index:50;
+  display:flex; align-items:center; gap:3px;
+  background:linear-gradient(135deg,rgba(26,18,11,0.95),rgba(61,43,31,0.95));
+  border:2px solid var(--accent-copper); border-radius:10px;
+  padding:6px 8px; box-shadow:0 6px 28px rgba(0,0,0,0.6);
+  backdrop-filter:blur(12px); user-select:none;
+}
+.zoom-btn {
+  font-family:var(--font-heading); font-size:1.1rem; font-weight:700;
+  width:40px; height:40px;
+  border:1px solid rgba(184,115,51,0.3); border-radius:6px;
+  background:rgba(255,255,255,0.06); color:var(--accent-gold);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all 0.15s;
+}
+.zoom-btn:hover {
+  background:var(--accent-copper); color:#fff;
+  border-color:var(--accent-copper); transform:scale(1.05);
+}
+.zoom-btn:active { transform:scale(0.95); }
+.zoom-btn-text {
+  font-size:0.55rem; width:auto; padding:0 14px; letter-spacing:1px; text-transform:uppercase;
+}
+.zoom-level {
+  font-family:var(--font-heading); font-size:0.72rem; font-weight:600;
+  color:var(--text-light); min-width:54px; text-align:center; letter-spacing:1px;
+}
+.zoom-divider { width:1px; height:28px; background:rgba(184,115,51,0.3); margin:0 5px; }
+.zoom-hint {
+  font-family:var(--font-body); font-size:0.55rem; color:var(--text-muted);
+  margin-left:6px; letter-spacing:0.5px;
+}
 
 /* ═══ LOADING ═══ */
 .loading-overlay {
   position:absolute; inset:0; background:var(--bg-dark);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  z-index:10; transition:opacity 0.4s ease;
+  z-index:60; transition:opacity 0.4s ease;
 }
 .loading-overlay.hidden { opacity:0; pointer-events:none; }
 .spinner {
@@ -172,7 +206,7 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 }
 .error-hint code {
   background:rgba(184,115,51,0.15); color:var(--accent-copper);
-  padding:1px 6px; border-radius:3px; font-size:0.7rem;
+  padding:1px 6px; border-radius:3px;
 }
 
 /* ═══ BACKDROP ═══ */
@@ -180,8 +214,6 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   display:none; position:fixed; inset:0; z-index:899;
   background:rgba(0,0,0,0.5); backdrop-filter:blur(2px);
 }
-
-/* ═══ SIDEBAR FOOTER ═══ */
 .sidebar-footer {
   padding:0.8rem 1.2rem; border-top:1px solid var(--border-main);
   font-size:0.55rem; color:var(--text-muted); text-align:center;
@@ -190,7 +222,7 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 
 /* ═══ RESPONSIVE ═══ */
 @media (max-width:960px) {
-  :root { --header-h: 80px; }
+  :root { --header-h:80px; }
   .menu-toggle { display:block; }
   .sidebar { transform:translateX(-100%); }
   .sidebar.open { transform:translateX(0); box-shadow:6px 0 30px rgba(0,0,0,0.5); }
@@ -198,9 +230,13 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   .content { left:0; }
   .main-title { font-size:1.3rem; letter-spacing:2px; }
   .subtitle { display:none; }
+  .zoom-toolbar { bottom:14px; right:14px; padding:4px 5px; }
+  .zoom-btn { width:34px; height:34px; font-size:0.95rem; }
+  .zoom-btn-text { padding:0 10px; font-size:0.5rem; }
+  .zoom-hint { display:none; }
 }
 @media (max-width:500px) {
-  :root { --sidebar-w: 280px; --header-h: 70px; }
+  :root { --sidebar-w:280px; --header-h:70px; }
   .main-title { font-size:1rem; letter-spacing:1px; }
   .viewing-badge { font-size:0.5rem; padding:4px 8px; }
 }
@@ -208,7 +244,6 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 </head>
 <body>
 
-<!-- ═══ HEADER ═══ -->
 <header class="top-bar">
   <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
   <div class="title-content">
@@ -220,7 +255,6 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   </div>
 </header>
 
-<!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-header">
     <h2>Schedule Versions <span class="version-count" id="versionCount">0</span></h2>
@@ -231,58 +265,161 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 </aside>
 <div class="sidebar-backdrop" id="backdrop"></div>
 
-<!-- ═══ CONTENT ═══ -->
 <main class="content" id="content">
   <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner"></div>
     <div class="loading-text">Loading schedule…</div>
   </div>
-  <iframe id="scheduleFrame" title="Schedule View"></iframe>
+
+  <!-- ZOOM TOOLBAR -->
+  <div class="zoom-toolbar" id="zoomToolbar">
+    <button class="zoom-btn" id="zoomOut" title="Zoom Out">−</button>
+    <div class="zoom-level" id="zoomLevel">100%</div>
+    <button class="zoom-btn" id="zoomIn" title="Zoom In">+</button>
+    <div class="zoom-divider"></div>
+    <button class="zoom-btn zoom-btn-text" id="zoomFit" title="Fit entire schedule to screen">FIT</button>
+    <button class="zoom-btn zoom-btn-text" id="zoomReset" title="Actual size (100%)">1 : 1</button>
+    <span class="zoom-hint">Ctrl ± to zoom</span>
+  </div>
+
+  <!-- SCALED IFRAME -->
+  <div class="iframe-container" id="iframeContainer">
+    <iframe id="scheduleFrame" title="Schedule View"></iframe>
+  </div>
 </main>
 
 <script>
 (function () {
-  const sidebar     = document.getElementById('sidebar');
-  const backdrop    = document.getElementById('backdrop');
-  const menuToggle  = document.getElementById('menuToggle');
-  const versionList = document.getElementById('versionList');
-  const versionCount= document.getElementById('versionCount');
-  const frame       = document.getElementById('scheduleFrame');
-  const loading     = document.getElementById('loadingOverlay');
-  const headerBadge = document.getElementById('headerBadge');
+  // ─── DOM ───
+  const sidebar      = document.getElementById('sidebar');
+  const backdrop     = document.getElementById('backdrop');
+  const menuToggle   = document.getElementById('menuToggle');
+  const versionList  = document.getElementById('versionList');
+  const versionCount = document.getElementById('versionCount');
+  const frame        = document.getElementById('scheduleFrame');
+  const container    = document.getElementById('iframeContainer');
+  const loading      = document.getElementById('loadingOverlay');
+  const headerBadge  = document.getElementById('headerBadge');
+  const zoomLabel    = document.getElementById('zoomLevel');
+  const btnIn        = document.getElementById('zoomIn');
+  const btnOut       = document.getElementById('zoomOut');
+  const btnFit       = document.getElementById('zoomFit');
+  const btnReset     = document.getElementById('zoomReset');
+  const zoomToolbar  = document.getElementById('zoomToolbar');
 
-  let versions = [];
-  let activeId = null;
+  let versions  = [];
+  let activeId  = null;
 
-  menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
-  backdrop.addEventListener('click', () => sidebar.classList.remove('open'));
+  // ─── ZOOM ENGINE ───
+  const MIN_ZOOM = 0.15;
+  const MAX_ZOOM = 2.0;
+  const STEP     = 0.1;
+  let currentZoom = 1;
 
-  frame.addEventListener('load', () => {
-    setTimeout(() => loading.classList.add('hidden'), 200);
-    sidebar.classList.remove('open');
+  function applyZoom(z) {
+    currentZoom = Math.round(Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, z)) * 100) / 100;
+    const inv = 1 / currentZoom;
+    frame.style.transform = 'scale(' + currentZoom + ')';
+    frame.style.width     = (inv * 100) + '%';
+    frame.style.height    = (inv * 100) + '%';
+    zoomLabel.textContent = Math.round(currentZoom * 100) + '%';
+  }
+
+  function fitToWidth() {
+    try {
+      var doc   = frame.contentDocument || frame.contentWindow.document;
+      var table = doc.getElementById('schedule-table');
+      if (table) {
+        var tableW = table.scrollWidth || table.offsetWidth;
+        var availW = container.clientWidth;
+        applyZoom((availW / tableW) * 0.97);
+        return;
+      }
+    } catch (e) { /* cross-origin or not loaded yet */ }
+    applyZoom(0.35); // sensible fallback
+  }
+
+  function fitToAll() {
+    try {
+      var doc    = frame.contentDocument || frame.contentWindow.document;
+      var body   = doc.body;
+      var table  = doc.getElementById('schedule-table');
+      if (body && table) {
+        var contentW = table.scrollWidth || body.scrollWidth;
+        var contentH = body.scrollHeight;
+        var availW   = container.clientWidth;
+        var availH   = container.clientHeight;
+        var scaleW   = availW / contentW;
+        var scaleH   = availH / contentH;
+        applyZoom(Math.min(scaleW, scaleH) * 0.95);
+        return;
+      }
+    } catch (e) {}
+    applyZoom(0.28);
+  }
+
+  // ─── ZOOM CONTROLS ───
+  btnIn.addEventListener('click',    function() { applyZoom(currentZoom + STEP); });
+  btnOut.addEventListener('click',   function() { applyZoom(currentZoom - STEP); });
+  btnFit.addEventListener('click',   fitToAll);
+  btnReset.addEventListener('click', function() { applyZoom(1); });
+
+  // Scroll wheel on the toolbar to zoom
+  zoomToolbar.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    applyZoom(currentZoom + (e.deltaY < 0 ? STEP : -STEP));
+  }, { passive: false });
+
+  // Ctrl+Plus / Ctrl+Minus keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    if (!(e.ctrlKey || e.metaKey)) return;
+    if (e.key === '=' || e.key === '+') { e.preventDefault(); applyZoom(currentZoom + STEP); }
+    if (e.key === '-')                  { e.preventDefault(); applyZoom(currentZoom - STEP); }
+    if (e.key === '0')                  { e.preventDefault(); fitToAll(); }
   });
 
+  // ─── SIDEBAR TOGGLE ───
+  menuToggle.addEventListener('click', function() { sidebar.classList.toggle('open'); });
+  backdrop.addEventListener('click',   function() { sidebar.classList.remove('open'); });
+
+  // ─── IFRAME LOADED → auto-fit ───
+  frame.addEventListener('load', function() {
+    setTimeout(function() {
+      loading.classList.add('hidden');
+      sidebar.classList.remove('open');
+      fitToAll();          // ← auto zoom-to-fit on every load
+    }, 400);
+  });
+
+  // Re-fit on window resize
+  var resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(fitToAll, 200);
+  });
+
+  // ─── VERSION MANAGEMENT ───
   function getUrlVersion() {
     return new URLSearchParams(window.location.search).get('v');
   }
   function setUrlVersion(id) {
-    const url = new URL(window.location);
+    var url = new URL(window.location);
     url.searchParams.set('v', id);
     window.history.pushState({ v: id }, '', url);
   }
 
   function loadVersion(id) {
-    const ver = versions.find(v => v.id === id);
+    var ver = versions.find(function(v) { return v.id === id; });
     if (!ver) return;
     activeId = id;
     setUrlVersion(id);
     loading.classList.remove('hidden');
+    // Reset zoom before loading so the old frame doesn't flash at wrong size
+    applyZoom(1);
     frame.src = ver.file;
-
     headerBadge.textContent = ver.version;
     headerBadge.classList.toggle('is-current', !!ver.current);
-
-    document.querySelectorAll('.version-card').forEach(card => {
+    document.querySelectorAll('.version-card').forEach(function(card) {
       card.classList.toggle('active', card.dataset.id === id);
     });
   }
@@ -290,59 +427,58 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   function renderVersions() {
     versionList.innerHTML = '';
     versionCount.textContent = versions.length;
-    versions.forEach(v => {
-      const card = document.createElement('div');
+    versions.forEach(function(v) {
+      var card = document.createElement('div');
       card.className = 'version-card';
       card.dataset.id = v.id;
-      let badges = '';
+      var badges = '';
       if (v.current) badges += '<span class="badge badge-current">Latest</span>';
-      if (v.draft)   badges += '<span class="badge badge-draft">Draft</span>';
-      card.innerHTML = `
-        <div class="v-name">${esc(v.version)}${badges}</div>
-        <div class="v-date">Published: ${esc(v.date)}</div>
-        ${v.description ? `<div class="v-desc">${esc(v.description)}</div>` : ''}
-      `;
-      card.addEventListener('click', () => loadVersion(v.id));
+      card.innerHTML =
+        '<div class="v-name">' + esc(v.version) + badges + '</div>' +
+        '<div class="v-date">Published: ' + esc(v.date) + '</div>' +
+        (v.description ? '<div class="v-desc">' + esc(v.description) + '</div>' : '');
+      card.addEventListener('click', function() { loadVersion(v.id); });
       versionList.appendChild(card);
     });
   }
 
   function esc(s) {
-    const d = document.createElement('div');
+    var d = document.createElement('div');
     d.textContent = s;
     return d.innerHTML;
   }
 
   function showError(msg) {
-    loading.innerHTML = `
-      <div class="error-state">
-        <div class="error-icon">⚠</div>
-        <div class="error-title">Cannot Load Versions</div>
-        <div class="error-hint">${msg}</div>
-      </div>`;
+    loading.innerHTML =
+      '<div class="error-state">' +
+        '<div class="error-icon">⚠</div>' +
+        '<div class="error-title">Cannot Load Versions</div>' +
+        '<div class="error-hint">' + msg + '</div>' +
+      '</div>';
   }
 
+  // ─── BOOT ───
   fetch('versions.json?_=' + Date.now())
-    .then(r => {
-      if (!r.ok) throw new Error(r.status);
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
     })
-    .then(data => {
-      versions = data.sort((a, b) => b.date.localeCompare(a.date));
+    .then(function(data) {
+      versions = data.sort(function(a, b) { return b.date.localeCompare(a.date); });
       renderVersions();
-      const urlVer = getUrlVersion();
-      const match  = urlVer && versions.find(v => v.id === urlVer);
-      const target = match ? match.id : (versions.find(v => v.current) || versions[0]).id;
+      var urlVer = getUrlVersion();
+      var match  = urlVer && versions.find(function(v) { return v.id === urlVer; });
+      var target = match ? match.id : (versions.find(function(v) { return v.current; }) || versions[0]).id;
       loadVersion(target);
     })
-    .catch(err => {
+    .catch(function(err) {
       console.error(err);
       showError('Could not load <code>versions.json</code>.<br><br>Error: ' + esc(String(err)));
       headerBadge.textContent = 'Error';
     });
 
-  window.addEventListener('popstate', () => {
-    const v = getUrlVersion();
+  window.addEventListener('popstate', function() {
+    var v = getUrlVersion();
     if (v && v !== activeId) loadVersion(v);
   });
 })();
