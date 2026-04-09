@@ -86,6 +86,40 @@ tr.section-sep td{height:3px;padding:0;border:none;}
 .zoom-btn-text{font-size:0.6rem;width:auto;padding:0 16px;letter-spacing:1px;text-transform:uppercase;}
 .zoom-level{font-family:var(--font-heading);font-size:0.78rem;font-weight:600;color:#f5e6c8;min-width:58px;text-align:center;letter-spacing:1px;}
 .zoom-divider{width:1px;height:30px;background:rgba(184,115,51,0.35);margin:0 6px;}
+
+/* ─── RESIZE HANDLE ─── */
+.resize-handle{
+  height:12px;cursor:ns-resize;
+  background:linear-gradient(135deg,#3d2b1f,#2c1f14);
+  border:2px solid var(--border-main);border-top:none;
+  border-radius:0 0 6px 6px;margin:0 0.5rem;
+  display:flex;align-items:center;justify-content:center;
+  user-select:none;transition:background 0.15s;
+}
+.resize-handle:hover{background:var(--accent-copper);}
+.resize-handle::after{
+  content:'';width:40px;height:4px;
+  border-top:2px solid var(--border-light);
+  border-bottom:2px solid var(--border-light);
+}
+.resize-handle .max-btn{
+  position:absolute;right:1.5rem;
+  font-family:var(--font-heading);font-size:0.5rem;
+  color:var(--accent-gold);background:none;border:1px solid rgba(184,115,51,0.4);
+  padding:1px 8px;border-radius:3px;cursor:pointer;letter-spacing:1px;
+  transition:all 0.15s;
+}
+.resize-handle .max-btn:hover{background:var(--accent-copper);color:#fff;border-color:var(--accent-copper);}
+
+/* When maximized, hide the nav bar and fill the page */
+body.schedule-maximized .section-nav,
+body.schedule-maximized .scroll-progress-wrap{display:none;}
+body.schedule-maximized .schedule-wrapper{
+  margin:0;border-radius:0;border-width:0 0 2px 0;
+}
+body.schedule-maximized .resize-handle{
+  margin:0;border-radius:0;
+}
 </style>
 </head>
 <body>
@@ -97,6 +131,10 @@ tr.section-sep td{height:3px;padding:0;border:none;}
 
 <div class="schedule-wrapper" id="scheduleWrap">
   <table id="schedule-table"></table>
+</div>
+
+<div class="resize-handle" id="resizeHandle" title="Drag to resize — double-click to maximize">
+  <button class="max-btn" id="maxBtn">MAXIMIZE</button>
 </div>
 
 <div class="back-to-top" id="backToTop" title="Back to top">▲</div>
@@ -256,6 +294,92 @@ backTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smo
 
   // Auto-fit on load
   setTimeout(fitToWidth,300);
+})();
+
+/* ═══════ RESIZE HANDLE ═══════ */
+(function(){
+  var handle=document.getElementById('resizeHandle');
+  var maxBtn=document.getElementById('maxBtn');
+  var isResizing=false;
+  var startY=0,startH=0;
+  var savedMaxH=null;
+  var isMaximized=false;
+
+  // Drag to resize
+  handle.addEventListener('mousedown',function(e){
+    if(e.target===maxBtn)return;
+    isResizing=true;
+    startY=e.clientY;
+    startH=wrap.offsetHeight;
+    document.body.style.cursor='ns-resize';
+    document.body.style.userSelect='none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove',function(e){
+    if(!isResizing)return;
+    var delta=e.clientY-startY;
+    var newH=Math.max(200,startH+delta);
+    wrap.style.maxHeight=newH/currentZoom+'px';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mouseup',function(){
+    if(isResizing){
+      isResizing=false;
+      document.body.style.cursor='';
+      document.body.style.userSelect='';
+      fixStickyHeaders();
+    }
+  });
+
+  // Double-click to maximize/restore
+  handle.addEventListener('dblclick',function(){
+    toggleMaximize();
+  });
+
+  maxBtn.addEventListener('click',function(e){
+    e.stopPropagation();
+    toggleMaximize();
+  });
+
+  function toggleMaximize(){
+    isMaximized=!isMaximized;
+    document.body.classList.toggle('schedule-maximized',isMaximized);
+    if(isMaximized){
+      savedMaxH=wrap.style.maxHeight;
+      var fullH=window.innerHeight-handle.offsetHeight-4;
+      wrap.style.maxHeight=fullH/currentZoom+'px';
+      maxBtn.textContent='RESTORE';
+    }else{
+      wrap.style.maxHeight=savedMaxH||'';
+      updateWrapperHeight();
+      maxBtn.textContent='MAXIMIZE';
+    }
+    setTimeout(fixStickyHeaders,50);
+  }
+
+  // Touch support
+  handle.addEventListener('touchstart',function(e){
+    if(e.target===maxBtn)return;
+    isResizing=true;
+    startY=e.touches[0].clientY;
+    startH=wrap.offsetHeight;
+    e.preventDefault();
+  },{passive:false});
+  document.addEventListener('touchmove',function(e){
+    if(!isResizing)return;
+    var delta=e.touches[0].clientY-startY;
+    wrap.style.maxHeight=Math.max(200,startH+delta)/currentZoom+'px';
+  });
+  document.addEventListener('touchend',function(){
+    if(isResizing){isResizing=false;fixStickyHeaders();}
+  });
+
+  // Escape to restore
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&isMaximized)toggleMaximize();
+  });
 })();
 </script>
 </body>
