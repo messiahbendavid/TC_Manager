@@ -143,14 +143,15 @@ tbody td{padding:4px 8px;border:1px solid rgba(196,168,130,0.4);font-size:0.88re
 
 /* STICKY SECTION COLUMN — frozen left */
 td.section-cell{
-  font-family:var(--font-heading);font-size:0.78rem;font-weight:700;
-  text-transform:uppercase;letter-spacing:0.8px;text-align:center;
-  padding:10px 8px;width:170px;min-width:170px;max-width:170px;
-  white-space:normal;word-wrap:break-word;line-height:1.45;
+  font-family:var(--font-heading);font-size:1.1rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:1.5px;text-align:center;
+  padding:10px 4px;
+  width:60px;min-width:60px;max-width:60px;
+  white-space:nowrap;line-height:1.2;
   border-left-width:5px;border-left-style:solid;vertical-align:middle;
   position:sticky;left:0;z-index:14;
-  /* opaque background so content scrolls behind cleanly */
   background:#f3e2c0;
+  writing-mode:vertical-rl;
 }
 
 /* GANTT CELL */
