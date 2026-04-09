@@ -124,7 +124,6 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 .badge-current { background:var(--accent-gold); color:var(--bg-dark); }
 
 /* ═══ MAIN CONTENT ═══ */
-/* ═══ MAIN CONTENT ═══ */
 .content {
   position:fixed;
   top:var(--header-h);
@@ -132,7 +131,6 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   right:0;
   bottom:0;
   background:#f5e6c8;
-  overflow:hidden;
 }
 
 #scheduleFrame {
@@ -140,7 +138,6 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   border:none;
   width:100%;
   height:100%;
-  transform-origin:0 0;
 }
 
 /* ═══ ZOOM TOOLBAR ═══ */
@@ -292,72 +289,60 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
 
 <script>
 (function () {
-  // ─── DOM ───
-  const sidebar      = document.getElementById('sidebar');
-  const backdrop     = document.getElementById('backdrop');
-  const menuToggle   = document.getElementById('menuToggle');
-  const versionList  = document.getElementById('versionList');
-  const versionCount = document.getElementById('versionCount');
-  const frame        = document.getElementById('scheduleFrame');
-  const container    = document.getElementById('content');
-  const loading      = document.getElementById('loadingOverlay');
-  const headerBadge  = document.getElementById('headerBadge');
-  const zoomLabel    = document.getElementById('zoomLevel');
-  const btnIn        = document.getElementById('zoomIn');
-  const btnOut       = document.getElementById('zoomOut');
-  const btnFit       = document.getElementById('zoomFit');
-  const btnReset     = document.getElementById('zoomReset');
-  const zoomToolbar  = document.getElementById('zoomToolbar');
+  var sidebar      = document.getElementById('sidebar');
+  var backdrop     = document.getElementById('backdrop');
+  var menuToggle   = document.getElementById('menuToggle');
+  var versionList  = document.getElementById('versionList');
+  var versionCount = document.getElementById('versionCount');
+  var frame        = document.getElementById('scheduleFrame');
+  var loading      = document.getElementById('loadingOverlay');
+  var headerBadge  = document.getElementById('headerBadge');
+  var zoomLabel    = document.getElementById('zoomLevel');
+  var btnIn        = document.getElementById('zoomIn');
+  var btnOut       = document.getElementById('zoomOut');
+  var btnFit       = document.getElementById('zoomFit');
+  var btnReset     = document.getElementById('zoomReset');
+  var zoomToolbar  = document.getElementById('zoomToolbar');
 
-  let versions  = [];
-  let activeId  = null;
+  var versions = [];
+  var activeId = null;
 
   // ─── ZOOM ENGINE ───
-  const MIN_ZOOM = 0.15;
-  const MAX_ZOOM = 2.0;
-  const STEP     = 0.1;
-  let currentZoom = 1;
+  // Sets CSS zoom directly on the iframe's internal document.
+  // No transforms, no overflow conflicts.
+  var MIN_ZOOM = 0.15;
+  var MAX_ZOOM = 2.0;
+  var STEP     = 0.05;
+  var currentZoom = 1;
 
   function applyZoom(z) {
     currentZoom = Math.round(Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, z)) * 100) / 100;
-    const inv = 1 / currentZoom;
-    frame.style.transform = 'scale(' + currentZoom + ')';
-    frame.style.width     = (inv * 100) + '%';
-    frame.style.height    = (inv * 100) + '%';
-    zoomLabel.textContent = Math.round(currentZoom * 100) + '%';
-  }
-
-  function fitToWidth() {
     try {
-      var doc   = frame.contentDocument || frame.contentWindow.document;
-      var table = doc.getElementById('schedule-table');
-      if (table) {
-        var tableW = table.scrollWidth || table.offsetWidth;
-        var availW = container.clientWidth;
-        applyZoom((availW / tableW) * 0.97);
-        return;
-      }
-    } catch (e) { /* cross-origin or not loaded yet */ }
-    applyZoom(0.35); // sensible fallback
+      var doc = frame.contentDocument || frame.contentWindow.document;
+      doc.documentElement.style.zoom = String(currentZoom);
+    } catch(e) {}
+    zoomLabel.textContent = Math.round(currentZoom * 100) + '%';
   }
 
   function fitToAll() {
     try {
-      var doc    = frame.contentDocument || frame.contentWindow.document;
-      var body   = doc.body;
-      var table  = doc.getElementById('schedule-table');
-      if (body && table) {
-        var contentW = table.scrollWidth || body.scrollWidth;
+      var doc = frame.contentDocument || frame.contentWindow.document;
+      var table = doc.getElementById('schedule-table');
+      var body = doc.body;
+      if (table && body) {
+        // Temporarily reset zoom to measure true content size
+        doc.documentElement.style.zoom = '1';
+        var contentW = Math.max(table.scrollWidth, body.scrollWidth);
         var contentH = body.scrollHeight;
-        var availW   = container.clientWidth;
-        var availH   = container.clientHeight;
-        var scaleW   = availW / contentW;
-        var scaleH   = availH / contentH;
+        var availW = frame.clientWidth;
+        var availH = frame.clientHeight;
+        var scaleW = availW / contentW;
+        var scaleH = availH / contentH;
         applyZoom(Math.min(scaleW, scaleH) * 0.95);
         return;
       }
-    } catch (e) {}
-    applyZoom(0.85);
+    } catch(e) {}
+    applyZoom(0.35);
   }
 
   // ─── ZOOM CONTROLS ───
@@ -366,13 +351,11 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
   btnFit.addEventListener('click',   fitToAll);
   btnReset.addEventListener('click', function() { applyZoom(1); });
 
-  // Scroll wheel on the toolbar to zoom
   zoomToolbar.addEventListener('wheel', function(e) {
     e.preventDefault();
     applyZoom(currentZoom + (e.deltaY < 0 ? STEP : -STEP));
   }, { passive: false });
 
-  // Ctrl+Plus / Ctrl+Minus keyboard shortcuts
   document.addEventListener('keydown', function(e) {
     if (!(e.ctrlKey || e.metaKey)) return;
     if (e.key === '=' || e.key === '+') { e.preventDefault(); applyZoom(currentZoom + STEP); }
@@ -380,24 +363,23 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
     if (e.key === '0')                  { e.preventDefault(); fitToAll(); }
   });
 
-  // ─── SIDEBAR TOGGLE ───
+  // ─── SIDEBAR ───
   menuToggle.addEventListener('click', function() { sidebar.classList.toggle('open'); });
   backdrop.addEventListener('click',   function() { sidebar.classList.remove('open'); });
 
-  // ─── IFRAME LOADED → auto-fit ───
+  // ─── IFRAME LOADED ───
   frame.addEventListener('load', function() {
     setTimeout(function() {
       loading.classList.add('hidden');
       sidebar.classList.remove('open');
-      applyZoom(0.2);          // ← auto zoom-to-fit on every load
+      applyZoom(0.35);   // ← STARTING ZOOM — adjust this number
     }, 400);
   });
 
-  // Re-fit on window resize
   var resizeTimer;
   window.addEventListener('resize', function() {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(fitToAll, 200);
+    resizeTimer = setTimeout(function() { applyZoom(currentZoom); }, 200);
   });
 
   // ─── VERSION MANAGEMENT ───
@@ -416,8 +398,6 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
     activeId = id;
     setUrlVersion(id);
     loading.classList.remove('hidden');
-    // Reset zoom before loading so the old frame doesn't flash at wrong size
-    applyZoom(1);
     frame.src = ver.file;
     headerBadge.textContent = ver.version;
     headerBadge.classList.toggle('is-current', !!ver.current);
@@ -459,7 +439,6 @@ body { background:var(--bg-darker); color:var(--text-light); font-family:var(--f
       '</div>';
   }
 
-  // ─── BOOT ───
   fetch('versions.json?_=' + Date.now())
     .then(function(r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
